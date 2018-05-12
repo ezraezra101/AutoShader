@@ -759,9 +759,13 @@ compiler_rcc_clean:
 	-$(DEL_FILE) qrc_resources.cpp
 qrc_resources.cpp: resources.qrc \
 		/usr/local/Cellar/qt/5.10.1/bin/rcc \
-		icons/save.png \
 		icons/open_sketch.png \
-		icons/open_cross.png
+		icons/save.png \
+		icons/open.png \
+		icons/brush.png \
+		icons/open_cross.png \
+		icons/eraser.png \
+		icons/image.png
 	/usr/local/Cellar/qt/5.10.1/bin/rcc -name resources resources.qrc -o qrc_resources.cpp
 
 compiler_moc_predefs_make_all: moc_predefs.h
@@ -1077,9 +1081,13 @@ moc_mainwindow.cpp: crossfieldgraphic.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
 		harmoniccrossfield.h \
 		glwidget.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		eigen/Eigen/Eigen \
 		eigen/Eigen/Dense \
 		eigen/Eigen/Core \
@@ -1659,9 +1667,13 @@ moc_glwidget.cpp: crossfieldgraphic.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		glwidget.h \
 		moc_predefs.h \
 		/usr/local/Cellar/qt/5.10.1/bin/moc
@@ -1979,9 +1991,13 @@ ui_mainwindow.h: mainwindow.ui \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
-		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent
+		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h
 	/usr/local/Cellar/qt/5.10.1/bin/uic mainwindow.ui -o ui_mainwindow.h
 
 compiler_rez_source_make_all:
@@ -2301,9 +2317,13 @@ main.o: main.cpp distancetransform.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		eigen/Eigen/Eigen \
 		eigen/Eigen/Dense \
 		eigen/Eigen/Core \
@@ -4555,9 +4575,13 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
 		harmoniccrossfield.h \
 		glwidget.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		eigen/Eigen/Eigen \
 		eigen/Eigen/Dense \
 		eigen/Eigen/Core \
@@ -5136,9 +5160,13 @@ glwidget.o: glwidget.cpp glwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
-		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent
+		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o glwidget.o glwidget.cpp
 
 crossfieldgraphic.o: crossfieldgraphic.cpp crossfieldgraphic.h \
@@ -6561,9 +6589,13 @@ harmoniccrossfield.o: harmoniccrossfield.cpp harmoniccrossfield.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		eigen/Eigen/Eigen \
 		eigen/Eigen/Dense \
 		eigen/Eigen/Core \
@@ -7130,9 +7162,13 @@ bendfield.o: bendfield.cpp bendfield.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		eigen/Eigen/Eigen \
 		eigen/Eigen/Dense \
 		eigen/Eigen/Core \
@@ -7687,8 +7723,16 @@ normalfield.o: normalfield.cpp normalfield.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o normalfield.o normalfield.cpp
 
 canvas.o: canvas.cpp canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qevent.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPainter \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpainter.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpainter.h
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o canvas.o canvas.cpp
 
 qrc_resources.o: qrc_resources.cpp 

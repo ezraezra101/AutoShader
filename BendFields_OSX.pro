@@ -79,7 +79,8 @@ SOURCES += main.cpp \
     harmoniccrossfield.cpp \
     bendfield.cpp \
     normalfield.cpp \
-    canvas.cpp
+    canvas.cpp \
+    workerthread.cpp
 
 HEADERS += \
     distancetransform.h \
@@ -99,7 +100,8 @@ HEADERS += \
     harmoniccrossfield.h \
     bendfield.h \
     normalfield.h \
-    canvas.h
+    canvas.h \
+    workerthread.h
 
 OTHER_FILES +=
 

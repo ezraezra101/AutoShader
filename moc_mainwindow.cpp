@@ -22,7 +22,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
     QByteArrayData data[13];
-    char stringdata0[235];
+    char stringdata0[154];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,27 +32,24 @@ struct qt_meta_stringdata_MainWindow_t {
 static const qt_meta_stringdata_MainWindow_t qt_meta_stringdata_MainWindow = {
     {
 QT_MOC_LITERAL(0, 0, 10), // "MainWindow"
-QT_MOC_LITERAL(1, 11, 25), // "loadFromFileButtonClicked"
-QT_MOC_LITERAL(2, 37, 0), // ""
-QT_MOC_LITERAL(3, 38, 22), // "loadImageButtonClicked"
-QT_MOC_LITERAL(4, 61, 25), // "processImageButtonClicked"
-QT_MOC_LITERAL(5, 87, 34), // "covariantProcessImageButtonCl..."
-QT_MOC_LITERAL(6, 122, 17), // "activeCrossesMode"
-QT_MOC_LITERAL(7, 140, 18), // "activeHatchingMode"
-QT_MOC_LITERAL(8, 159, 16), // "activeNormalMode"
-QT_MOC_LITERAL(9, 176, 20), // "activeConstraintMode"
-QT_MOC_LITERAL(10, 197, 16), // "changeResolution"
-QT_MOC_LITERAL(11, 214, 14), // "saveCrossField"
-QT_MOC_LITERAL(12, 229, 5) // "about"
+QT_MOC_LITERAL(1, 11, 15), // "loadConstraints"
+QT_MOC_LITERAL(2, 27, 0), // ""
+QT_MOC_LITERAL(3, 28, 13), // "loadCurvature"
+QT_MOC_LITERAL(4, 42, 8), // "loadMask"
+QT_MOC_LITERAL(5, 51, 13), // "loadConvexity"
+QT_MOC_LITERAL(6, 65, 15), // "drawConstraints"
+QT_MOC_LITERAL(7, 81, 13), // "drawCurvature"
+QT_MOC_LITERAL(8, 95, 8), // "drawMask"
+QT_MOC_LITERAL(9, 104, 13), // "drawConvexity"
+QT_MOC_LITERAL(10, 118, 13), // "exportShading"
+QT_MOC_LITERAL(11, 132, 15), // "showCrossFields"
+QT_MOC_LITERAL(12, 148, 5) // "about"
 
     },
-    "MainWindow\0loadFromFileButtonClicked\0"
-    "\0loadImageButtonClicked\0"
-    "processImageButtonClicked\0"
-    "covariantProcessImageButtonClicked\0"
-    "activeCrossesMode\0activeHatchingMode\0"
-    "activeNormalMode\0activeConstraintMode\0"
-    "changeResolution\0saveCrossField\0about"
+    "MainWindow\0loadConstraints\0\0loadCurvature\0"
+    "loadMask\0loadConvexity\0drawConstraints\0"
+    "drawCurvature\0drawMask\0drawConvexity\0"
+    "exportShading\0showCrossFields\0about"
 };
 #undef QT_MOC_LITERAL
 
@@ -78,9 +75,9 @@ static const uint qt_meta_data_MainWindow[] = {
        7,    0,   74,    2, 0x08 /* Private */,
        8,    0,   75,    2, 0x08 /* Private */,
        9,    0,   76,    2, 0x08 /* Private */,
-      10,    1,   77,    2, 0x08 /* Private */,
-      11,    0,   80,    2, 0x08 /* Private */,
-      12,    0,   81,    2, 0x08 /* Private */,
+      10,    0,   77,    2, 0x08 /* Private */,
+      11,    0,   78,    2, 0x08 /* Private */,
+      12,    0,   79,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
@@ -91,7 +88,7 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,    2,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -104,20 +101,21 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         MainWindow *_t = static_cast<MainWindow *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->loadFromFileButtonClicked(); break;
-        case 1: _t->loadImageButtonClicked(); break;
-        case 2: _t->processImageButtonClicked(); break;
-        case 3: _t->covariantProcessImageButtonClicked(); break;
-        case 4: _t->activeCrossesMode(); break;
-        case 5: _t->activeHatchingMode(); break;
-        case 6: _t->activeNormalMode(); break;
-        case 7: _t->activeConstraintMode(); break;
-        case 8: _t->changeResolution((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 9: _t->saveCrossField(); break;
+        case 0: _t->loadConstraints(); break;
+        case 1: _t->loadCurvature(); break;
+        case 2: _t->loadMask(); break;
+        case 3: _t->loadConvexity(); break;
+        case 4: _t->drawConstraints(); break;
+        case 5: _t->drawCurvature(); break;
+        case 6: _t->drawMask(); break;
+        case 7: _t->drawConvexity(); break;
+        case 8: _t->exportShading(); break;
+        case 9: _t->showCrossFields(); break;
         case 10: _t->about(); break;
         default: ;
         }
     }
+    Q_UNUSED(_a);
 }
 
 QT_INIT_METAOBJECT const QMetaObject MainWindow::staticMetaObject = {

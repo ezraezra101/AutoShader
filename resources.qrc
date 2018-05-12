@@ -1,7 +1,11 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>icons/save.png</file>
+        <file>icons/brush.png</file>
+        <file>icons/eraser.png</file>
+        <file>icons/image.png</file>
+        <file>icons/open.png</file>
         <file>icons/open_cross.png</file>
         <file>icons/open_sketch.png</file>
+        <file>icons/save.png</file>
     </qresource>
 </RCC>

@@ -8,6 +8,7 @@ NormalField::NormalField()
 NormalField::NormalField(CrossField *crossfield)
 {
     this->crossfield = crossfield;
+    Q_ASSERT(crossfield != NULL);
     this->normals = new Vec3d[this->width() * this->height()];
     for(int i=0; i < this->height(); i++) {
         for(int j=0; j < this->width(); j++) {
@@ -26,6 +27,7 @@ NormalField::~NormalField() {
 }
 
 int NormalField::index(int x, int y) {
+    Q_ASSERT(crossfield != NULL);
     return this->crossfield->width() * y + x;
 }
 

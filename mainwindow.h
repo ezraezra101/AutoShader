@@ -75,36 +75,16 @@ public:
     ~MainWindow();
 
 private slots:
-
-    // Load from file
-    void loadFromFileButtonClicked();
-
-    // load Image files
-    void loadImageButtonClicked();
-
-    // Process Topology Image files
-    void processImageButtonClicked();
-
-    // Process covariant
-    void covariantProcessImageButtonClicked();
-
-    // Crosses Mode
-    void activeCrossesMode();
-
-    // Hatching Mode
-    void activeHatchingMode();
-
-    // Normal Mode
-    void activeNormalMode();
-
-    // Constraint Mode
-    void activeConstraintMode();
-
-    // Change Resolution
-    void changeResolution(int);
-
-    // Save field
-    void saveCrossField();
+    void loadConstraints();
+    void loadCurvature();
+    void loadMask();
+    void loadConvexity();
+    void drawConstraints();
+    void drawCurvature();
+    void drawMask();
+    void drawConvexity();
+    void exportShading();
+    void showCrossFields();
 
     // Show Dialog ABOUT
     void about();
@@ -114,6 +94,8 @@ private:
     // Methods
     void connects();
     void inits();
+
+    void loadImageButton(GLWidget::CanvasEnum c);
 
     // Graphics
     Ui::MainWindow *ui;

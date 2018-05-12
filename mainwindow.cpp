@@ -82,34 +82,59 @@ void MainWindow::inits()
     this->index_harmonic = NULL;
     this->index_covariant = NULL;
     this->computedTopology = false;
-    this->ui->glwidget->updateCursorArrow();
 }
 
 void MainWindow::connects()
 {
-    // Load Button
-    connect(this->ui->loadFromFile,SIGNAL(clicked()),this,SLOT(loadFromFileButtonClicked()));
+    connect(this->ui->load_constraints, SIGNAL(clicked()), this, SLOT(loadConstraints()));
+    connect(this->ui->load_curvature, SIGNAL(clicked()), this, SLOT(loadCurvature()));
+    connect(this->ui->load_mask, SIGNAL(clicked()), this, SLOT(loadMask()));
+    connect(this->ui->load_convexity, SIGNAL(clicked()), this, SLOT(loadConvexity()));
 
-    // Load Image Button
-    connect(this->ui->loadImage,SIGNAL(clicked()),this,SLOT(loadImageButtonClicked()));
+    connect(this->ui->draw_constraints, SIGNAL(clicked()), this, SLOT(drawConstraints()));
+    connect(this->ui->draw_curvature, SIGNAL(clicked()), this, SLOT(drawCurvature()));
+    connect(this->ui->draw_mask, SIGNAL(clicked()), this, SLOT(drawMask()));
+    connect(this->ui->draw_convexity, SIGNAL(clicked()), this, SLOT(drawConvexity()));
 
-    // Process Button
-    connect(this->ui->smooth,SIGNAL(clicked()),this,SLOT(processImageButtonClicked()));
-    connect(this->ui->smooth_covariant,SIGNAL(clicked()),this,SLOT(covariantProcessImageButtonClicked()));
+    connect(this->ui->export_shading, SIGNAL(clicked()), this, SLOT(exportShading()));
+    connect(this->ui->show_cross_fields, SIGNAL(clicked()), this, SLOT(showCrossFields()));
+}
 
-    // Change vis. mode
-    connect(this->ui->crossesMode,SIGNAL(clicked()),this,SLOT(activeCrossesMode()));
-    connect(this->ui->hatchingMode,SIGNAL(clicked()),this,SLOT(activeHatchingMode()));    
-    connect(this->ui->normalMode,SIGNAL(clicked()),this,SLOT(activeNormalMode()));
+void MainWindow::loadConstraints() {
+    loadImageButton(GLWidget::CONSTRAINT_CANVAS);
+}
+void MainWindow::loadCurvature() {
+    loadImageButton(GLWidget::CURVATURE_CANVAS);
+}
+void MainWindow::loadMask() {
+    loadImageButton(GLWidget::MASK_CANVAS);
+}
+void MainWindow::loadConvexity() {
+    loadImageButton(GLWidget::CONCAVITY_CANVAS);
+}
 
-    // Step
-    connect(this->ui->resolution,SIGNAL(valueChanged(int)),this,SLOT(changeResolution(int)));
+void MainWindow::drawConstraints() {
+    this->ui->glwidget->setActiveCanvas(GLWidget::CONSTRAINT_CANVAS);
+}
+void MainWindow::drawCurvature() {
+    this->ui->glwidget->setActiveCanvas(GLWidget::CURVATURE_CANVAS);
+}
+void MainWindow::drawMask() {
+    this->ui->glwidget->setActiveCanvas(GLWidget::MASK_CANVAS);
+}
+void MainWindow::drawConvexity() {
+    this->ui->glwidget->setActiveCanvas(GLWidget::CONCAVITY_CANVAS);
+}
 
-    // About
- //   connect(this->ui->actionAbout,SIGNAL(triggered()),this,SLOT(about()));
-
-    // Save
-    connect(this->ui->save,SIGNAL(clicked()),this,SLOT(saveCrossField()));
+void MainWindow::exportShading() {
+    QMessageBox msgBox;
+    msgBox.setText("This hasn't been implemented yet!"); // TODO
+    msgBox.exec();
+}
+void MainWindow::showCrossFields() {
+    QMessageBox msgBox;
+    msgBox.setText("This hasn't been implemented yet!"); // TODO
+    msgBox.exec();
 }
 
 void MainWindow::about()
@@ -127,29 +152,38 @@ void MainWindow::about()
     msgBox.exec();
 }
 
-// Crosses Mode
-void MainWindow::activeCrossesMode()
-{
-    this->ui->glwidget->activeCrossesMode();
+
+
+void MainWindow::loadImageButton(GLWidget::CanvasEnum c) {
+    // Open File Dialog
+    QString sketchFileName = QFileDialog::getOpenFileName(this, tr("Open File"),"../sketches/",tr("Sketch (*.png)"));
+
+    if(!sketchFileName.isEmpty()) {
+        QImage img = QImage(sketchFileName);
+
+        if(c == GLWidget::CONSTRAINT_CANVAS) {
+            int width = img.width();
+            int height = img.height();
+            this->ui->glwidget->getCanvas(GLWidget::CONSTRAINT_CANVAS).init(width, height);
+            this->ui->glwidget->getCanvas(GLWidget::CURVATURE_CANVAS).init(width, height);
+            this->ui->glwidget->getCanvas(GLWidget::MASK_CANVAS).init(width, height);
+            this->ui->glwidget->getCanvas(GLWidget::CONCAVITY_CANVAS).init(width, height);
+            this->ui->glwidget->getCanvas(GLWidget::CROSSFIELD_CANVAS).init(width, height);
+            this->ui->glwidget->getCanvas(GLWidget::NORMALS_CANVAS).init(width, height);
+            this->ui->glwidget->getCanvas(GLWidget::SHADING_CANVAS).init(width, height);
+        }
+        if(!this->ui->glwidget->getCanvas(c).setImage(img, true)) {
+            QMessageBox msgBox;
+            msgBox.setText("Image sizes must match the original drawing constraints image.");
+            msgBox.exec();
+        }
+
+        this->ui->glwidget->repaint();
+    }
 }
 
-// Hatching Mode
-void MainWindow::activeHatchingMode()
-{
-    this->ui->glwidget->activeHatchingMode();
-}
 
-// Normal Mode
-void MainWindow::activeNormalMode()
-{
-    this->ui->glwidget->activeNormalMode();
-}
-
-// Constraint mode Mode
-void MainWindow::activeConstraintMode()
-{
-    this->ui->glwidget->activeConstraintMode();
-}
+/*
 
 void MainWindow::changeResolution(int s)
 {
@@ -184,7 +218,7 @@ void MainWindow::loadFromFileButtonClicked()
     if(!fileName.isEmpty())
     {
         // Update cursor
-        this->ui->glwidget->updateCursorConstraint();
+        //this->ui->glwidget->updateCursorConstraint();
 
         // Create crossfield
         this->crossfield = new CrossField();
@@ -231,7 +265,7 @@ void MainWindow::loadImageButtonClicked()
     if(!sketchFileName.isEmpty())
     {
         // Update cursor
-        this->ui->glwidget->updateCursorConstraint();
+        //this->ui->glwidget->updateCursorConstraint();
 
         // File Names
         QString fileMask = sketchFileName;
@@ -364,3 +398,4 @@ void MainWindow::covariantProcessImageButtonClicked()
         this->ui->glwidget->updateCursorArrow();
     }
 }
+*/

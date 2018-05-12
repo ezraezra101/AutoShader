@@ -49,6 +49,8 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <QPoint>
 #include <QWheelEvent>
 
+
+
 // OpenGL window to display crossfields
 class GLWidget : public QGLWidget
 {
@@ -56,17 +58,25 @@ class GLWidget : public QGLWidget
 
 public:
 
+    enum CanvasEnum {
+        CONSTRAINT_CANVAS,
+        CURVATURE_CANVAS,
+        MASK_CANVAS,
+// Currently not useful:
+        CONCAVITY_CANVAS,
+        CROSSFIELD_CANVAS,
+        NORMALS_CANVAS,
+        SHADING_CANVAS
+    };
+
     explicit GLWidget(QWidget *parent = 0);
     void setCrossFieldGraphic(CrossFieldGraphic * cfg);
 
-    void activeCrossesMode();
-    void activeHatchingMode();
-    void activeNormalMode();
-    void activeConstraintMode();
     void updateView();
-    void updateCursorConstraint();
-    void updateCursorArrow();
-    void updateCursorWait();
+
+
+    void setActiveCanvas(CanvasEnum c);
+    Canvas &getCanvas(CanvasEnum c);
 
 protected:
 
@@ -81,14 +91,14 @@ protected:
     void wheelEvent(QWheelEvent* event);
 
 private:
+    Canvas &activeCanvas();
 
-    CrossFieldGraphic * crossfieldgraphic;
-    QList<QPoint> pointList;
-    bool registering;
-
-    int strokeSize;
-    int mode;
+    Canvas constraintStrokes;
+    Canvas curvatureStrokes;
+    Canvas mask;
+    Canvas shading;
+    CanvasEnum mode;
 };
 
-*/
+
 #endif // GLWIDGET_H

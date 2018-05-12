@@ -38,27 +38,23 @@ knowledge of the CeCILL license and that you accept its terms.
 
 #include "glwidget.h"
 
-#define CROSSMODE 0
-#define HATCHMODE 1
-#define CONSTRAINTMODE 3
-#define NORMALMODE 4
-
-
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-    this->mode = true;
-    registering = false;
-    this->strokeSize = 5;
-    QPixmap pix_cursor(":/icons/brush");
-    pix_cursor = pix_cursor.scaledToHeight(20);
-    QCursor cursor(pix_cursor);
-    this->setCursor(cursor);
+    this->mode = CONSTRAINT_CANVAS;
+
+    int x = 600, y = 400;
+    constraintStrokes = Canvas(); constraintStrokes.init(x,y);
+    curvatureStrokes = Canvas(); curvatureStrokes.init(x,y);
+    shading = Canvas(); shading.init(x,y);
+    mask = Canvas(); mask.init(x,y);
+
+    activeCanvas().updateCursor(this);
 }
 
 void GLWidget::setCrossFieldGraphic(CrossFieldGraphic * cfg)
 {
-    crossfieldgraphic = cfg;
+    //crossfieldgraphic = cfg; // TODO reimplement
 }
 
 void GLWidget::initializeGL()
@@ -77,12 +73,11 @@ void GLWidget::resizeGL(int width, int height)
 {
     glViewport(0, 0, (GLint)width, (GLint)height);
 
-    this->crossfieldgraphic->setDimensions(this->height(), this->width());
+    activeCanvas().updateCursor(this);
 }
 
 void GLWidget::updateView()
 {
-    this->crossfieldgraphic->setDimensions(this->height(), this->width());
 }
 
 
@@ -119,115 +114,63 @@ void GLWidget::paintEvent(QPaintEvent *event)
         crossfieldgraphic->paintNormals(&painter, event);
     }
 */
-    Canvas background(QImage("/Users/ezradavis/Desktop/Ezra's_Folder/school/Yale/Advanced Graphics Sketching/final project/BendFields_OSX/Sketches/bag_l1.png"));
-    background.draw(&painter, event, this->width(), this->height());
+    curvatureStrokes.draw(&painter, event, this);
+    mask.draw(&painter, event, this);
+    shading.draw(&painter, event, this);
+    constraintStrokes.draw(&painter, event, this);
     painter.end();
-
 }
-
-void GLWidget::activeCrossesMode()
-{
-    this->mode = CROSSMODE;
-    this->repaint();
-}
-
-void GLWidget::activeHatchingMode()
-{
-    this->mode = HATCHMODE;
-    this->repaint();
-}
-
-void GLWidget::activeConstraintMode()
-{
-    this->mode = CONSTRAINTMODE;
-    this->repaint();
-}
-
-void GLWidget::activeNormalMode()
-{
-    this->mode = NORMALMODE;
-    this->repaint();
-}
-
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    if(event->button()==Qt::LeftButton)
-    {
-        registering = true;
-    }
+//    if(event->button()==Qt::LeftButton)
+//    {
+//        registering = true;
+//    }
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if(registering)
-    {
-        this->crossfieldgraphic->removeConstraints(event->pos(),this->rect(), this->strokeSize);
-        this->repaint();
-    }
+    activeCanvas().mouseEvent(event, this);
+//    if(registering)
+//    {
+//        this->crossfieldgraphic->removeConstraints(event->pos(),this->rect(), this->strokeSize);
+//        this->repaint();
+//    }
 
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(event->button()==Qt::LeftButton)
-    {
-        registering = false;
-    }
+//    if(event->button()==Qt::LeftButton)
+//    {
+//        registering = false;
+//    }
 }
-
-void GLWidget::updateCursorConstraint()
-{
-    // create cursor
-    QPixmap cursor_img(64,64);
-    cursor_img.fill(Qt::transparent);
-    QPainter painter(&cursor_img);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform);
-    QBrush brush(QColor(255,0,0,200));
-    QPen pen(QColor(0,0,0,0),0);
-
-
-    painter.setPen(pen);
-    painter.setBrush(brush);
-    painter.drawEllipse(QPoint(32,32),this->strokeSize*2,this->strokeSize*2);
-    painter.end();
-
-    // Set it
-    QCursor cursor(cursor_img,32,32);
-    this->setCursor(cursor);
-}
-
-
-void GLWidget::updateCursorArrow()
-{
-    this->setCursor(Qt::ArrowCursor);
-}
-
-void GLWidget::updateCursorWait()
-{
-    this->setCursor(Qt::WaitCursor);
-}
-
 
 void GLWidget::wheelEvent(QWheelEvent* event)
 {
+    activeCanvas().mouseWheelEvent(event, this);
+}
 
-   // get delta
-   int numDegrees = event->delta() / 8;
-   int numSteps = numDegrees / 15;
+void GLWidget::setActiveCanvas(GLWidget::CanvasEnum mode) {
+    this->mode = mode;
+    activeCanvas().updateCursor(this);
+}
 
-   // modify size of stroke
-   int newSize =  this->strokeSize  + numSteps;
+Canvas &GLWidget::activeCanvas() {
+    return getCanvas(mode);
+}
 
-   // Check null size
-   if(newSize < 1)
-   {
-       newSize = 1;
-   }
-
-   this->strokeSize = newSize;
-
-   updateCursorConstraint();
-
+Canvas &GLWidget::getCanvas(CanvasEnum c) {
+    switch(c) {
+    case CONSTRAINT_CANVAS:
+        return constraintStrokes;
+    case CURVATURE_CANVAS:
+        return curvatureStrokes;
+    case MASK_CANVAS:
+        return mask;
+    default:
+        return constraintStrokes;
+    }
 }
