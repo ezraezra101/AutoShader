@@ -94,6 +94,9 @@ private slots:
     // Hatching Mode
     void activeHatchingMode();
 
+    // Normal Mode
+    void activeNormalMode();
+
     // Constraint Mode
     void activeConstraintMode();
 

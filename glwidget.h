@@ -41,6 +41,7 @@ knowledge of the CeCILL license and that you accept its terms.
 
 // Includes from the project
 #include "crossfieldgraphic.h"
+#include "canvas.h"
 
 // External libraries / headers (Solvers, IO, Debugging)
 #include <QGLWidget>
@@ -60,6 +61,7 @@ public:
 
     void activeCrossesMode();
     void activeHatchingMode();
+    void activeNormalMode();
     void activeConstraintMode();
     void updateView();
     void updateCursorConstraint();
@@ -88,4 +90,5 @@ private:
     int mode;
 };
 
+*/
 #endif // GLWIDGET_H

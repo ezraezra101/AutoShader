@@ -77,7 +77,9 @@ SOURCES += main.cpp \
     filterlineintegralconvolution.cpp \
     unknownsindexer.cpp \
     harmoniccrossfield.cpp \
-    bendfield.cpp
+    bendfield.cpp \
+    normalfield.cpp \
+    canvas.cpp
 
 HEADERS += \
     distancetransform.h \
@@ -95,7 +97,9 @@ HEADERS += \
     ui_mainwindow.h \
     unknownsindexer.h \
     harmoniccrossfield.h \
-    bendfield.h
+    bendfield.h \
+    normalfield.h \
+    canvas.h
 
 OTHER_FILES +=
 

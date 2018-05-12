@@ -803,3 +803,39 @@ void CrossFieldGraphic::paintConstraints(QPainter *painter, QPaintEvent *event)
     }
 
 }
+
+void CrossFieldGraphic::paintNormals(QPainter *painter, QPaintEvent *event)
+{
+    // Fill it white
+    painter->fillRect(event->rect(), background);
+
+    // If sketch
+    if(this->sketch != NULL)
+    {
+        QImage backgroundImage;
+
+        backgroundImage = this->sketch->scaled(this->sketchScaledWidth,this->sketchScaledHeight,Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+        QRect postion(x_displ,y_displ,this->sketchScaledWidth,this->sketchScaledHeight);
+        painter->drawImage(postion,backgroundImage);
+
+        // If crossfield
+        if(this->crossfield != NULL)
+        {
+
+            NormalField normals(this->crossfield);
+            QImage normalImg(backgroundImage.width(), backgroundImage.height(), QImage::Format_ARGB32);
+            for(int i=0; i < backgroundImage.height(); i++) {
+                for(int j=0; j < backgroundImage.width(); j++) {
+                    QColor color = normals.getColor(
+                                (int)((i*normals.width()) / backgroundImage.width()),
+                                (int)((j*normals.height()) / backgroundImage.height()));
+                    color.setAlpha(128);
+
+                    normalImg.setPixelColor(j,i,color); // TODO make not slow...
+                }
+            }
+            painter->drawImage(postion,normalImg);
+
+        }
+    }
+}

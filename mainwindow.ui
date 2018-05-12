@@ -15,18 +15,34 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="5" column="1" rowspan="2">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
+    <item row="1" column="1" colspan="2">
+     <widget class="QPushButton" name="smooth">
+      <property name="maximumSize">
        <size>
-        <width>20</width>
-        <height>357</height>
+        <width>68</width>
+        <height>31</height>
        </size>
       </property>
-     </spacer>
+      <property name="toolTip">
+       <string>Compute harmonic cross field</string>
+      </property>
+      <property name="text">
+       <string>Harmonic</string>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" rowspan="9">
+     <widget class="GLWidget" name="glwidget" native="true">
+      <property name="cursor">
+       <cursorShape>CrossCursor</cursorShape>
+      </property>
+      <property name="mouseTracking">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="6" column="2" rowspan="2">
      <widget class="QSlider" name="resolution">
@@ -56,25 +72,6 @@
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="1">
-     <widget class="QPushButton" name="removeStroke">
-      <property name="maximumSize">
-       <size>
-        <width>31</width>
-        <height>31</height>
-       </size>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
-      </property>
-      <property name="flat">
-       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -211,99 +208,18 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QPushButton" name="loadImage">
-      <property name="maximumSize">
+    <item row="5" column="1" rowspan="2">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
        <size>
-        <width>31</width>
-        <height>31</height>
+        <width>20</width>
+        <height>357</height>
        </size>
       </property>
-      <property name="toolTip">
-       <string>Load Sketch</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="resources.qrc">
-        <normaloff>:/icons/icons/open_sketch.png</normaloff>:/icons/icons/open_sketch.png</iconset>
-      </property>
-      <property name="flat">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" rowspan="9">
-     <widget class="GLWidget" name="glwidget" native="true">
-      <property name="cursor">
-       <cursorShape>CrossCursor</cursorShape>
-      </property>
-      <property name="mouseTracking">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1" colspan="2">
-     <widget class="QPushButton" name="smooth">
-      <property name="maximumSize">
-       <size>
-        <width>68</width>
-        <height>31</height>
-       </size>
-      </property>
-      <property name="toolTip">
-       <string>Compute harmonic cross field</string>
-      </property>
-      <property name="text">
-       <string>Harmonic</string>
-      </property>
-      <property name="flat">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1" colspan="2">
-     <widget class="QPushButton" name="smooth_covariant">
-      <property name="maximumSize">
-       <size>
-        <width>68</width>
-        <height>31</height>
-       </size>
-      </property>
-      <property name="toolTip">
-       <string>Compute BendField</string>
-      </property>
-      <property name="text">
-       <string>BendField</string>
-      </property>
-      <property name="flat">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QPushButton" name="save">
-      <property name="maximumSize">
-       <size>
-        <width>31</width>
-        <height>31</height>
-       </size>
-      </property>
-      <property name="toolTip">
-       <string>Export BendField</string>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset resource="resources.qrc">
-        <normaloff>:/icons/icons/save.png</normaloff>:/icons/icons/save.png</iconset>
-      </property>
-      <property name="flat">
-       <bool>true</bool>
-      </property>
-     </widget>
+     </spacer>
     </item>
     <item row="4" column="2" rowspan="2">
      <spacer name="verticalSpacer_2">
@@ -328,6 +244,48 @@
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="loadImage">
+      <property name="maximumSize">
+       <size>
+        <width>31</width>
+        <height>31</height>
+       </size>
+      </property>
+      <property name="toolTip">
+       <string>Load Sketch</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/icons/icons/open_sketch.png</normaloff>:/icons/icons/open_sketch.png</iconset>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QPushButton" name="removeStroke">
+      <property name="maximumSize">
+       <size>
+        <width>31</width>
+        <height>31</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -411,6 +369,64 @@
       </property>
       <property name="flat">
        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1" colspan="2">
+     <widget class="QPushButton" name="smooth_covariant">
+      <property name="maximumSize">
+       <size>
+        <width>68</width>
+        <height>31</height>
+       </size>
+      </property>
+      <property name="toolTip">
+       <string>Compute BendField</string>
+      </property>
+      <property name="text">
+       <string>BendField</string>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="save">
+      <property name="maximumSize">
+       <size>
+        <width>31</width>
+        <height>31</height>
+       </size>
+      </property>
+      <property name="toolTip">
+       <string>Export BendField</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/icons/icons/save.png</normaloff>:/icons/icons/save.png</iconset>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="2">
+     <widget class="QPushButton" name="normalMode">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>31</width>
+        <height>31</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>N</string>
       </property>
      </widget>
     </item>

@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[12];
-    char stringdata0[218];
+    QByteArrayData data[13];
+    char stringdata0[235];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -39,10 +39,11 @@ QT_MOC_LITERAL(4, 61, 25), // "processImageButtonClicked"
 QT_MOC_LITERAL(5, 87, 34), // "covariantProcessImageButtonCl..."
 QT_MOC_LITERAL(6, 122, 17), // "activeCrossesMode"
 QT_MOC_LITERAL(7, 140, 18), // "activeHatchingMode"
-QT_MOC_LITERAL(8, 159, 20), // "activeConstraintMode"
-QT_MOC_LITERAL(9, 180, 16), // "changeResolution"
-QT_MOC_LITERAL(10, 197, 14), // "saveCrossField"
-QT_MOC_LITERAL(11, 212, 5) // "about"
+QT_MOC_LITERAL(8, 159, 16), // "activeNormalMode"
+QT_MOC_LITERAL(9, 176, 20), // "activeConstraintMode"
+QT_MOC_LITERAL(10, 197, 16), // "changeResolution"
+QT_MOC_LITERAL(11, 214, 14), // "saveCrossField"
+QT_MOC_LITERAL(12, 229, 5) // "about"
 
     },
     "MainWindow\0loadFromFileButtonClicked\0"
@@ -50,8 +51,8 @@ QT_MOC_LITERAL(11, 212, 5) // "about"
     "processImageButtonClicked\0"
     "covariantProcessImageButtonClicked\0"
     "activeCrossesMode\0activeHatchingMode\0"
-    "activeConstraintMode\0changeResolution\0"
-    "saveCrossField\0about"
+    "activeNormalMode\0activeConstraintMode\0"
+    "changeResolution\0saveCrossField\0about"
 };
 #undef QT_MOC_LITERAL
 
@@ -61,7 +62,7 @@ static const uint qt_meta_data_MainWindow[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -69,18 +70,20 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   64,    2, 0x08 /* Private */,
-       3,    0,   65,    2, 0x08 /* Private */,
-       4,    0,   66,    2, 0x08 /* Private */,
-       5,    0,   67,    2, 0x08 /* Private */,
-       6,    0,   68,    2, 0x08 /* Private */,
-       7,    0,   69,    2, 0x08 /* Private */,
-       8,    0,   70,    2, 0x08 /* Private */,
-       9,    1,   71,    2, 0x08 /* Private */,
-      10,    0,   74,    2, 0x08 /* Private */,
-      11,    0,   75,    2, 0x08 /* Private */,
+       1,    0,   69,    2, 0x08 /* Private */,
+       3,    0,   70,    2, 0x08 /* Private */,
+       4,    0,   71,    2, 0x08 /* Private */,
+       5,    0,   72,    2, 0x08 /* Private */,
+       6,    0,   73,    2, 0x08 /* Private */,
+       7,    0,   74,    2, 0x08 /* Private */,
+       8,    0,   75,    2, 0x08 /* Private */,
+       9,    0,   76,    2, 0x08 /* Private */,
+      10,    1,   77,    2, 0x08 /* Private */,
+      11,    0,   80,    2, 0x08 /* Private */,
+      12,    0,   81,    2, 0x08 /* Private */,
 
  // slots: parameters
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -107,10 +110,11 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 3: _t->covariantProcessImageButtonClicked(); break;
         case 4: _t->activeCrossesMode(); break;
         case 5: _t->activeHatchingMode(); break;
-        case 6: _t->activeConstraintMode(); break;
-        case 7: _t->changeResolution((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 8: _t->saveCrossField(); break;
-        case 9: _t->about(); break;
+        case 6: _t->activeNormalMode(); break;
+        case 7: _t->activeConstraintMode(); break;
+        case 8: _t->changeResolution((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 9: _t->saveCrossField(); break;
+        case 10: _t->about(); break;
         default: ;
         }
     }
@@ -141,13 +145,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 11;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 10)
+        if (_id < 11)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 10;
+        _id -= 11;
     }
     return _id;
 }

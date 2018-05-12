@@ -41,6 +41,7 @@ knowledge of the CeCILL license and that you accept its terms.
 
 // Includes from the project
 #include "crossfield.h"
+#include "normalfield.h"
 #include "imageconverter.h"
 
 // External libraries / headers (Solvers, IO, Debugging)
@@ -70,6 +71,7 @@ public:
     void paint(QPainter * painter, QPaintEvent *event);
     void paintCrosses(QPainter *painter, QPaintEvent *event);
     void paintConstraints(QPainter *painter, QPaintEvent *event);
+    void paintNormals(QPainter *painter, QPaintEvent *event);
     void setCrossField(CrossField *);
     void setMask(Mat);
     void setCornersMask(Mat m);

@@ -32,19 +32,20 @@ public:
     QAction *actionAbout;
     QWidget *centralwidget;
     QGridLayout *gridLayout;
-    QSpacerItem *verticalSpacer;
+    QPushButton *smooth;
+    GLWidget *glwidget;
     QSlider *resolution;
-    QPushButton *removeStroke;
     QPushButton *crossesMode;
     QPushButton *loadFromFile;
-    QPushButton *loadImage;
-    GLWidget *glwidget;
-    QPushButton *smooth;
-    QPushButton *smooth_covariant;
-    QPushButton *save;
+    QSpacerItem *verticalSpacer;
     QSpacerItem *verticalSpacer_2;
     QFrame *line;
+    QPushButton *loadImage;
+    QPushButton *removeStroke;
     QPushButton *hatchingMode;
+    QPushButton *smooth_covariant;
+    QPushButton *save;
+    QPushButton *normalMode;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -58,9 +59,19 @@ public:
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         gridLayout = new QGridLayout(centralwidget);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
-        verticalSpacer = new QSpacerItem(20, 357, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        smooth = new QPushButton(centralwidget);
+        smooth->setObjectName(QStringLiteral("smooth"));
+        smooth->setMaximumSize(QSize(68, 31));
+        smooth->setFlat(true);
 
-        gridLayout->addItem(verticalSpacer, 5, 1, 2, 1);
+        gridLayout->addWidget(smooth, 1, 1, 1, 2);
+
+        glwidget = new GLWidget(centralwidget);
+        glwidget->setObjectName(QStringLiteral("glwidget"));
+        glwidget->setCursor(QCursor(Qt::CrossCursor));
+        glwidget->setMouseTracking(true);
+
+        gridLayout->addWidget(glwidget, 0, 0, 9, 1);
 
         resolution = new QSlider(centralwidget);
         resolution->setObjectName(QStringLiteral("resolution"));
@@ -72,14 +83,6 @@ public:
         resolution->setOrientation(Qt::Vertical);
 
         gridLayout->addWidget(resolution, 6, 2, 2, 1);
-
-        removeStroke = new QPushButton(centralwidget);
-        removeStroke->setObjectName(QStringLiteral("removeStroke"));
-        removeStroke->setMaximumSize(QSize(31, 31));
-        removeStroke->setCheckable(true);
-        removeStroke->setFlat(true);
-
-        gridLayout->addWidget(removeStroke, 7, 1, 1, 1);
 
         crossesMode = new QPushButton(centralwidget);
         crossesMode->setObjectName(QStringLiteral("crossesMode"));
@@ -113,6 +116,22 @@ public:
 
         gridLayout->addWidget(loadFromFile, 0, 1, 1, 1);
 
+        verticalSpacer = new QSpacerItem(20, 357, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout->addItem(verticalSpacer, 5, 1, 2, 1);
+
+        verticalSpacer_2 = new QSpacerItem(20, 329, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout->addItem(verticalSpacer_2, 4, 2, 2, 1);
+
+        line = new QFrame(centralwidget);
+        line->setObjectName(QStringLiteral("line"));
+        line->setMaximumSize(QSize(65, 16));
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+
+        gridLayout->addWidget(line, 3, 1, 1, 2);
+
         loadImage = new QPushButton(centralwidget);
         loadImage->setObjectName(QStringLiteral("loadImage"));
         loadImage->setMaximumSize(QSize(31, 31));
@@ -123,19 +142,28 @@ public:
 
         gridLayout->addWidget(loadImage, 0, 2, 1, 1);
 
-        glwidget = new GLWidget(centralwidget);
-        glwidget->setObjectName(QStringLiteral("glwidget"));
-        glwidget->setCursor(QCursor(Qt::CrossCursor));
-        glwidget->setMouseTracking(true);
+        removeStroke = new QPushButton(centralwidget);
+        removeStroke->setObjectName(QStringLiteral("removeStroke"));
+        removeStroke->setMaximumSize(QSize(31, 31));
+        removeStroke->setCheckable(true);
+        removeStroke->setFlat(true);
 
-        gridLayout->addWidget(glwidget, 0, 0, 9, 1);
+        gridLayout->addWidget(removeStroke, 7, 1, 1, 1);
 
-        smooth = new QPushButton(centralwidget);
-        smooth->setObjectName(QStringLiteral("smooth"));
-        smooth->setMaximumSize(QSize(68, 31));
-        smooth->setFlat(true);
+        hatchingMode = new QPushButton(centralwidget);
+        hatchingMode->setObjectName(QStringLiteral("hatchingMode"));
+        hatchingMode->setMaximumSize(QSize(31, 31));
+        QPalette palette1;
+        palette1.setBrush(QPalette::Active, QPalette::Base, brush1);
+        palette1.setBrush(QPalette::Active, QPalette::Window, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::Base, brush1);
+        palette1.setBrush(QPalette::Inactive, QPalette::Window, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::Base, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::Window, brush);
+        hatchingMode->setPalette(palette1);
+        hatchingMode->setFlat(true);
 
-        gridLayout->addWidget(smooth, 1, 1, 1, 2);
+        gridLayout->addWidget(hatchingMode, 8, 2, 1, 1);
 
         smooth_covariant = new QPushButton(centralwidget);
         smooth_covariant->setObjectName(QStringLiteral("smooth_covariant"));
@@ -154,32 +182,12 @@ public:
 
         gridLayout->addWidget(save, 4, 1, 1, 1);
 
-        verticalSpacer_2 = new QSpacerItem(20, 329, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        normalMode = new QPushButton(centralwidget);
+        normalMode->setObjectName(QStringLiteral("normalMode"));
+        normalMode->setEnabled(true);
+        normalMode->setMaximumSize(QSize(31, 31));
 
-        gridLayout->addItem(verticalSpacer_2, 4, 2, 2, 1);
-
-        line = new QFrame(centralwidget);
-        line->setObjectName(QStringLiteral("line"));
-        line->setMaximumSize(QSize(65, 16));
-        line->setFrameShape(QFrame::HLine);
-        line->setFrameShadow(QFrame::Sunken);
-
-        gridLayout->addWidget(line, 3, 1, 1, 2);
-
-        hatchingMode = new QPushButton(centralwidget);
-        hatchingMode->setObjectName(QStringLiteral("hatchingMode"));
-        hatchingMode->setMaximumSize(QSize(31, 31));
-        QPalette palette1;
-        palette1.setBrush(QPalette::Active, QPalette::Base, brush1);
-        palette1.setBrush(QPalette::Active, QPalette::Window, brush);
-        palette1.setBrush(QPalette::Inactive, QPalette::Base, brush1);
-        palette1.setBrush(QPalette::Inactive, QPalette::Window, brush);
-        palette1.setBrush(QPalette::Disabled, QPalette::Base, brush);
-        palette1.setBrush(QPalette::Disabled, QPalette::Window, brush);
-        hatchingMode->setPalette(palette1);
-        hatchingMode->setFlat(true);
-
-        gridLayout->addWidget(hatchingMode, 8, 2, 1, 1);
+        gridLayout->addWidget(normalMode, 9, 2, 1, 1);
 
         MainWindow->setCentralWidget(centralwidget);
         statusbar = new QStatusBar(MainWindow);
@@ -204,9 +212,12 @@ public:
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "BendFields", nullptr));
         actionAbout->setText(QApplication::translate("MainWindow", "About", nullptr));
 #ifndef QT_NO_TOOLTIP
+        smooth->setToolTip(QApplication::translate("MainWindow", "Compute harmonic cross field", nullptr));
+#endif // QT_NO_TOOLTIP
+        smooth->setText(QApplication::translate("MainWindow", "Harmonic", nullptr));
+#ifndef QT_NO_TOOLTIP
         resolution->setToolTip(QApplication::translate("MainWindow", "Change scale", nullptr));
 #endif // QT_NO_TOOLTIP
-        removeStroke->setText(QString());
 #ifndef QT_NO_TOOLTIP
         crossesMode->setToolTip(QApplication::translate("MainWindow", "Cross field view", nullptr));
 #endif // QT_NO_TOOLTIP
@@ -219,10 +230,11 @@ public:
         loadImage->setToolTip(QApplication::translate("MainWindow", "Load Sketch", nullptr));
 #endif // QT_NO_TOOLTIP
         loadImage->setText(QString());
+        removeStroke->setText(QString());
 #ifndef QT_NO_TOOLTIP
-        smooth->setToolTip(QApplication::translate("MainWindow", "Compute harmonic cross field", nullptr));
+        hatchingMode->setToolTip(QApplication::translate("MainWindow", "Hatching view", nullptr));
 #endif // QT_NO_TOOLTIP
-        smooth->setText(QApplication::translate("MainWindow", "Harmonic", nullptr));
+        hatchingMode->setText(QApplication::translate("MainWindow", "#", nullptr));
 #ifndef QT_NO_TOOLTIP
         smooth_covariant->setToolTip(QApplication::translate("MainWindow", "Compute BendField", nullptr));
 #endif // QT_NO_TOOLTIP
@@ -231,10 +243,7 @@ public:
         save->setToolTip(QApplication::translate("MainWindow", "Export BendField", nullptr));
 #endif // QT_NO_TOOLTIP
         save->setText(QString());
-#ifndef QT_NO_TOOLTIP
-        hatchingMode->setToolTip(QApplication::translate("MainWindow", "Hatching view", nullptr));
-#endif // QT_NO_TOOLTIP
-        hatchingMode->setText(QApplication::translate("MainWindow", "#", nullptr));
+        normalMode->setText(QApplication::translate("MainWindow", "N", nullptr));
     } // retranslateUi
 
 };

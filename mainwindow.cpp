@@ -100,6 +100,7 @@ void MainWindow::connects()
     // Change vis. mode
     connect(this->ui->crossesMode,SIGNAL(clicked()),this,SLOT(activeCrossesMode()));
     connect(this->ui->hatchingMode,SIGNAL(clicked()),this,SLOT(activeHatchingMode()));    
+    connect(this->ui->normalMode,SIGNAL(clicked()),this,SLOT(activeNormalMode()));
 
     // Step
     connect(this->ui->resolution,SIGNAL(valueChanged(int)),this,SLOT(changeResolution(int)));
@@ -136,6 +137,12 @@ void MainWindow::activeCrossesMode()
 void MainWindow::activeHatchingMode()
 {
     this->ui->glwidget->activeHatchingMode();
+}
+
+// Normal Mode
+void MainWindow::activeNormalMode()
+{
+    this->ui->glwidget->activeNormalMode();
 }
 
 // Constraint mode Mode

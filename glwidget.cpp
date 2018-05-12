@@ -41,6 +41,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #define CROSSMODE 0
 #define HATCHMODE 1
 #define CONSTRAINTMODE 3
+#define NORMALMODE 4
 
 
 GLWidget::GLWidget(QWidget *parent)
@@ -99,6 +100,8 @@ void GLWidget::paintEvent(QPaintEvent *event)
     QPainter painter;
     painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing);
+    /*
+
     if(mode==CROSSMODE)
     {
         crossfieldgraphic->paintCrosses(&painter, event);
@@ -111,8 +114,13 @@ void GLWidget::paintEvent(QPaintEvent *event)
     else if(mode==CONSTRAINTMODE)
     {
         crossfieldgraphic->paintConstraints(&painter, event);
+    } else if(mode==NORMALMODE)
+    {
+        crossfieldgraphic->paintNormals(&painter, event);
     }
-
+*/
+    Canvas background(QImage("/Users/ezradavis/Desktop/Ezra's_Folder/school/Yale/Advanced Graphics Sketching/final project/BendFields_OSX/Sketches/bag_l1.png"));
+    background.draw(&painter, event, this->width(), this->height());
     painter.end();
 
 }
@@ -135,6 +143,11 @@ void GLWidget::activeConstraintMode()
     this->repaint();
 }
 
+void GLWidget::activeNormalMode()
+{
+    this->mode = NORMALMODE;
+    this->repaint();
+}
 
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
