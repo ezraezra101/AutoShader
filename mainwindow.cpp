@@ -84,7 +84,7 @@ void MainWindow::connects()
     connect(this->ui->draw_convexity, SIGNAL(clicked()), this, SLOT(drawConvexity()));
 
     connect(this->ui->export_shading, SIGNAL(clicked()), this, SLOT(exportShading()));
-    connect(this->ui->show_cross_fields, SIGNAL(stateChanged()), this, SLOT(showCrossFields()));
+    connect(this->ui->show_cross_fields, SIGNAL(clicked()), this, SLOT(showCrossFields()));
 }
 
 void MainWindow::loadConstraints() {
@@ -154,7 +154,7 @@ void MainWindow::loadImageButton(GLWidget::CanvasEnum c) {
     QString sketchFileName = QFileDialog::getOpenFileName(this, tr("Open File"),"../sketches/",tr("Sketch (*.png)"));
 
     if(!sketchFileName.isEmpty()) {
-        QImage img = QImage(sketchFileName);
+        QImage img = ImageConverter::loadImage(sketchFileName);
 
         if(c == GLWidget::CONSTRAINT_CANVAS) {
             int width = img.width();
@@ -165,7 +165,7 @@ void MainWindow::loadImageButton(GLWidget::CanvasEnum c) {
             this->ui->glwidget->getCanvas(GLWidget::CONCAVITY_CANVAS).init(width, height);
             this->ui->glwidget->getCanvas(GLWidget::CROSSFIELD_CANVAS).init(width, height);
             this->ui->glwidget->getCanvas(GLWidget::NORMALS_CANVAS).init(width, height);
-            this->ui->glwidget->getCanvas(GLWidget::SHADING_CANVAS).init(width, height);
+            this->ui->glwidget->getCanvas(GLWidget::SHADING_CANVAS).init(width, height, Qt::white);
         }
         if(!this->ui->glwidget->getCanvas(c).setImage(img, true)) {
             QMessageBox msgBox;

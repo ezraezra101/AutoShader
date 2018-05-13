@@ -41,6 +41,36 @@ knowledge of the CeCILL license and that you accept its terms.
 ImageConverter::ImageConverter(){
 }
 
+QImage ImageConverter::loadImage(QString filename) {
+    // Note: this is probably slow because of setPixelColor...
+    QImage image = QImage(filename);
+    for(int i=0; i<image.height(); i++) {
+        for(int j=0; j<image.width(); j++) {
+            QColor c = image.pixel(j,i);
+            c.setAlphaF(1.0f-c.toHsv().lightnessF());
+            image.setPixelColor(j,i,c);
+        }
+    }
+
+    return image;
+}
+
+Mat ImageConverter::toMatRectifyAlpha(const QImage &img) {
+    // The function signature here doesn't match the rest of imageConverter... oh well.
+
+    QImage image(img.width(),img.height(), QImage::Format_RGB888);
+    image.fill(Qt::white);
+    QPainter p(&image);
+    p.drawImage(0,0,img); // Default composition mode is fine.
+    p.end();
+
+    // Bleh.. pointer fun - I arbitrarily wanted to *not* return a pointer...
+    Mat *m = ImageConverter::toMat(&image);
+    Mat mat = m->clone();
+    delete m;
+    return mat;
+}
+
 QImage * ImageConverter::toQImage(Mat * img)
 {
 

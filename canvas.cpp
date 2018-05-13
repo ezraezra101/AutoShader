@@ -15,9 +15,9 @@ Canvas::~Canvas() {
 
 }
 
-void Canvas::init(int width, int height) {
+void Canvas::init(int width, int height, QColor fill) {
     image = QImage(width,height, QImage::Format_RGBA8888);
-    image.fill(Qt::transparent);
+    image.fill(fill);
     numInteractions = 0;
 }
 

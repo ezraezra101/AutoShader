@@ -52,7 +52,7 @@ GLWidget::GLWidget(QWidget *parent)
     concavityCanvas = Canvas(); concavityCanvas.init(x,y);
     crossfieldCanvas = Canvas(); crossfieldCanvas.init(x,y);
     normalsCanvas = Canvas(); normalsCanvas.init(x,y);
-    shadingCanvas = Canvas(); shadingCanvas.init(x,y);
+    shadingCanvas = Canvas(); shadingCanvas.init(x,y, Qt::white);
 
     activeCanvas().updateCursor(this);
 }
@@ -96,12 +96,12 @@ void GLWidget::paintEvent(QPaintEvent *event)
     painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-
-    curvatureCanvas.draw(&painter, event, this);
-    maskCanvas.draw(&painter, event, this);
     shadingCanvas.draw(&painter, event, this);
     constraintCanvas.draw(&painter, event, this);
-
+    curvatureCanvas.draw(&painter, event, this);
+    if(mode == GLWidget::MASK_CANVAS) {
+        maskCanvas.draw(&painter, event, this);
+    }
     if(this->isShowingCrossFields) {
         crossfieldCanvas.draw(&painter, event, this);
     }
@@ -127,6 +127,7 @@ void GLWidget::wheelEvent(QWheelEvent* event) {
 void GLWidget::setActiveCanvas(GLWidget::CanvasEnum mode) {
     this->mode = mode;
     activeCanvas().updateCursor(this);
+    this->repaint();
 }
 
 Canvas &GLWidget::activeCanvas() {

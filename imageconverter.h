@@ -46,6 +46,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <QImage>
 #include <QColor>
 #include <QRgb>
+#include <QPainter>
 
 using namespace cv;
 
@@ -58,6 +59,13 @@ public:
 
     //A constructor. No parameters needed.
     ImageConverter();
+
+    // LoadImage - loads an image and converts its brightness to alpha.
+    static QImage loadImage(QString name);
+
+    // Converts an image to a matrix.
+    // Any place in img that is transparent is filled in with white.
+    static Mat toMatRectifyAlpha(const QImage &img);
 
     // Static method for converting from Mat to QImage.
     // It returns a new reference to an QImage which has to be deleted by the owner.

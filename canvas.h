@@ -19,7 +19,7 @@ public:
     Canvas(const QImage &i);
     ~Canvas();
 
-    void init(int width, int height);
+    void init(int width, int height, QColor fill=Qt::transparent);
     bool setImage(const QImage &im, bool matchSize = false);
     QImage getImage();
 
