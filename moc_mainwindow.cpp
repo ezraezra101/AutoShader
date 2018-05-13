@@ -42,14 +42,14 @@ QT_MOC_LITERAL(7, 81, 13), // "drawCurvature"
 QT_MOC_LITERAL(8, 95, 8), // "drawMask"
 QT_MOC_LITERAL(9, 104, 13), // "drawConvexity"
 QT_MOC_LITERAL(10, 118, 13), // "exportShading"
-QT_MOC_LITERAL(11, 132, 15), // "showCrossFields"
+QT_MOC_LITERAL(11, 132, 15), // "visibilityRadio"
 QT_MOC_LITERAL(12, 148, 5) // "about"
 
     },
     "MainWindow\0loadConstraints\0\0loadCurvature\0"
     "loadMask\0loadConvexity\0drawConstraints\0"
     "drawCurvature\0drawMask\0drawConvexity\0"
-    "exportShading\0showCrossFields\0about"
+    "exportShading\0visibilityRadio\0about"
 };
 #undef QT_MOC_LITERAL
 
@@ -110,7 +110,7 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 6: _t->drawMask(); break;
         case 7: _t->drawConvexity(); break;
         case 8: _t->exportShading(); break;
-        case 9: _t->showCrossFields(); break;
+        case 9: _t->visibilityRadio(); break;
         case 10: _t->about(); break;
         default: ;
         }

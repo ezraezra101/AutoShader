@@ -73,9 +73,8 @@ public:
 
 
     void setActiveCanvas(CanvasEnum c);
+    void setVisibleCanvas(CanvasEnum c);
     Canvas &getCanvas(CanvasEnum c);
-
-    void showCrossFields(bool);
 
 protected:
 
@@ -99,9 +98,8 @@ private:
     Canvas crossfieldCanvas;
     Canvas normalsCanvas;
     Canvas shadingCanvas;
-    CanvasEnum mode;
-
-    bool isShowingCrossFields;
+    CanvasEnum editable;
+    CanvasEnum visible;
 };
 
 

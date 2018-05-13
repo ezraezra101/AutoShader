@@ -78,9 +78,6 @@ class BendField
     // Unknowns index
     UnknownsIndexer * index;
 
-    // Mask of the selected region to solve for
-    Mat mask;
-
     // Sizes
     int h,w,sizeX,numerOfEntries;
 
@@ -128,10 +125,10 @@ public:
     // Period Jumps (filled, no modification in the bendfield optimization step)
     // Unknown Index (indexing constrained cels in the crosfield)
     // Mask (the mask for selected region to solve for)
-    BendField(CrossField * ,PeriodJumpField *, UnknownsIndexer *, Mat);
+    BendField(CrossField * ,PeriodJumpField *, UnknownsIndexer *);
 
     // Iterative method for solving the BendField
-    void smoothBendField(GLWidget * glwidget);
+    void smoothBendField();
 
 };
 

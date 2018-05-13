@@ -41,8 +41,8 @@ knowledge of the CeCILL license and that you accept its terms.
 GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-    this->mode = CONSTRAINT_CANVAS;
-    this->isShowingCrossFields = false;
+    this->editable = CONSTRAINT_CANVAS;
+    this->visible = SHADING_CANVAS;
 
     int x = 600, y = 400;
     constraintCanvas = Canvas(); constraintCanvas.init(x,y);
@@ -50,8 +50,8 @@ GLWidget::GLWidget(QWidget *parent)
     shadingCanvas = Canvas(); shadingCanvas.init(x,y);
     maskCanvas = Canvas(); maskCanvas.init(x,y);
     concavityCanvas = Canvas(); concavityCanvas.init(x,y);
-    crossfieldCanvas = Canvas(); crossfieldCanvas.init(x,y);
-    normalsCanvas = Canvas(); normalsCanvas.init(x,y);
+    crossfieldCanvas = Canvas(); crossfieldCanvas.init(x,y, Qt::white);
+    normalsCanvas = Canvas(); normalsCanvas.init(x,y, Qt::white);
     shadingCanvas = Canvas(); shadingCanvas.init(x,y, Qt::white);
 
     activeCanvas().updateCursor(this);
@@ -96,14 +96,12 @@ void GLWidget::paintEvent(QPaintEvent *event)
     painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    shadingCanvas.draw(&painter, event, this);
+    getCanvas(this->visible).draw(&painter, event, this); // Solid background layer
+
     constraintCanvas.draw(&painter, event, this);
     curvatureCanvas.draw(&painter, event, this);
-    if(mode == GLWidget::MASK_CANVAS) {
+    if(this->editable == GLWidget::MASK_CANVAS) {
         maskCanvas.draw(&painter, event, this);
-    }
-    if(this->isShowingCrossFields) {
-        crossfieldCanvas.draw(&painter, event, this);
     }
 
     painter.end();
@@ -125,13 +123,18 @@ void GLWidget::wheelEvent(QWheelEvent* event) {
 }
 
 void GLWidget::setActiveCanvas(GLWidget::CanvasEnum mode) {
-    this->mode = mode;
+    this->editable = mode;
     activeCanvas().updateCursor(this);
     this->repaint();
 }
 
+void GLWidget::setVisibleCanvas(GLWidget::CanvasEnum active) {
+    this->visible = active;
+    this->repaint();
+}
+
 Canvas &GLWidget::activeCanvas() {
-    return getCanvas(mode);
+    return getCanvas(editable);
 }
 
 Canvas &GLWidget::getCanvas(CanvasEnum c) {
@@ -153,9 +156,4 @@ Canvas &GLWidget::getCanvas(CanvasEnum c) {
     default:
         return constraintCanvas;
     }
-}
-
-void GLWidget::showCrossFields(bool b) {
-    this->isShowingCrossFields = b;
-    this->repaint();
 }

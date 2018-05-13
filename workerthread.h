@@ -12,15 +12,28 @@
 
 class WorkerThread
 {
-
 public:
     WorkerThread();
+    ~WorkerThread();
 
     void makeCrossField(QImage constraints, QImage curvature, QImage mask, GLWidget * dummy); // TODO remove dummy
 
-    QImage getNormals(CrossField *crossfield);
+    void outputImages(GLWidget *w);
 
-    QImage drawCrosses(CrossField &cf);
+    QImage drawNormals(CrossField *crossfield);
+    QImage drawShading(CrossField *crossfield);
+    QImage drawCrosses(CrossField *cf);
+
+private:
+    void initializeCrossField(QImage constraintsImg, QImage curvatureImg, QImage maskImg);
+    void harmonicSmoothing();
+    void covariantSmoothing();
+    void rotateCrosses();
+
+    CrossField *crossfield;
+    PeriodJumpField *pjumpfield;
+    cv::Mat mask;
+
 };
 
 #endif // WORKERTHREAD_H

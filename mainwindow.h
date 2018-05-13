@@ -79,7 +79,7 @@ private slots:
     void drawMask();
     void drawConvexity();
     void exportShading();
-    void showCrossFields();
+    void visibilityRadio();
 
     // Show Dialog ABOUT
     void about();

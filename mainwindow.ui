@@ -246,15 +246,26 @@
          </layout>
         </item>
         <item>
-         <widget class="QCheckBox" name="show_cross_fields">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <widget class="QRadioButton" name="show_crossfields">
           <property name="text">
-           <string>Show cross fields</string>
+           <string>Show crossfield</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="show_normals">
+          <property name="text">
+           <string>Show normals</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="show_shading">
+          <property name="text">
+           <string>Show shading</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

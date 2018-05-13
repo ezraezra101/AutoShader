@@ -18,6 +18,8 @@ public:
 
     QColor getColor(int x,int y);
     QImage toImage();
+    QImage toShadedImage();
+
 
 private:
     int index(int x, int y);

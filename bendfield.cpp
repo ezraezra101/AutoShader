@@ -63,15 +63,11 @@ BendField::BendField() {}
 // Crossfield
 // Period Jumps (filled, no modification in the bendfield optimization step)
 // Unknown Index (indexing constrained cels in the crosfield)
-// Mask (the mask for selected region to solve for)
-BendField::BendField(CrossField * c,PeriodJumpField * p, UnknownsIndexer * idx, Mat m)
+BendField::BendField(CrossField * c,PeriodJumpField * p, UnknownsIndexer * idx)
 {
     // Point crossfield and pjumpfield
     this->crossfield = c;
     this->pjumpfield = p;
-
-    // Mask
-    this->mask = m;
 
     // Index
     this->index = idx;
@@ -483,7 +479,7 @@ void BendField::buildCovariant(SpMat &A, VectorXd& b, int sizeX)
 }
 
 // Iterative method for solving the BendField
-void BendField::smoothBendField(GLWidget * glwidget)
+void BendField::smoothBendField()
 {
     // The matrix for solver
     SpMat A;
@@ -581,15 +577,7 @@ void BendField::smoothBendField(GLWidget * glwidget)
 
         qDebug() << "iter " << iter;
 
-
-        // If last iteration
-        // Orient consistently the crosses in the field
-        if(iter==9)
-        {
-            this->crossfield->rotateCrosses(pjumpfield, this->mask, this->index);
-        }
-
-         glwidget->repaint();
+         //glwidget->repaint();
     }
 
     // Normalize

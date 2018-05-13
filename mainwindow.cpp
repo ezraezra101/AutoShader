@@ -83,8 +83,11 @@ void MainWindow::connects()
     connect(this->ui->draw_mask, SIGNAL(clicked()), this, SLOT(drawMask()));
     connect(this->ui->draw_convexity, SIGNAL(clicked()), this, SLOT(drawConvexity()));
 
+    connect(this->ui->show_crossfields, SIGNAL(clicked()), this, SLOT(visibilityRadio()));
+    connect(this->ui->show_normals, SIGNAL(clicked()), this, SLOT(visibilityRadio()));
+    connect(this->ui->show_shading, SIGNAL(clicked()), this, SLOT(visibilityRadio()));
+
     connect(this->ui->export_shading, SIGNAL(clicked()), this, SLOT(exportShading()));
-    connect(this->ui->show_cross_fields, SIGNAL(clicked()), this, SLOT(showCrossFields()));
 }
 
 void MainWindow::loadConstraints() {
@@ -135,8 +138,16 @@ void MainWindow::exportShading() {
                 );
 }
 
-void MainWindow::showCrossFields() {
-    this->ui->glwidget->showCrossFields(this->ui->show_cross_fields->isChecked());
+void MainWindow::visibilityRadio() {
+    GLWidget::CanvasEnum visible;
+    if(this->ui->show_crossfields->isChecked()) {
+        visible = GLWidget::CROSSFIELD_CANVAS;
+    } else if(this->ui->show_normals->isChecked()) {
+        visible = GLWidget::NORMALS_CANVAS;
+    } else { //if(this->ui->show_shading->isChecked())
+        visible = GLWidget::SHADING_CANVAS;
+    }
+    this->ui->glwidget->setVisibleCanvas(visible);
 }
 
 void MainWindow::about()
@@ -170,8 +181,8 @@ void MainWindow::loadImageButton(GLWidget::CanvasEnum c) {
             this->ui->glwidget->getCanvas(GLWidget::CURVATURE_CANVAS).init(width, height);
             this->ui->glwidget->getCanvas(GLWidget::MASK_CANVAS).init(width, height);
             this->ui->glwidget->getCanvas(GLWidget::CONCAVITY_CANVAS).init(width, height);
-            this->ui->glwidget->getCanvas(GLWidget::CROSSFIELD_CANVAS).init(width, height);
-            this->ui->glwidget->getCanvas(GLWidget::NORMALS_CANVAS).init(width, height);
+            this->ui->glwidget->getCanvas(GLWidget::CROSSFIELD_CANVAS).init(width, height, Qt::white);
+            this->ui->glwidget->getCanvas(GLWidget::NORMALS_CANVAS).init(width, height, Qt::white);
             this->ui->glwidget->getCanvas(GLWidget::SHADING_CANVAS).init(width, height, Qt::white);
         }
         if(!this->ui->glwidget->getCanvas(c).setImage(img, true)) {

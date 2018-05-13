@@ -59,13 +59,11 @@ knowledge of the CeCILL license and that you accept its terms.
 
 HarmonicCrossField::HarmonicCrossField() {}
 
-HarmonicCrossField::HarmonicCrossField(CrossField * c,PeriodJumpField * p, UnknownsIndexer * idx, Mat m)
+HarmonicCrossField::HarmonicCrossField(CrossField * c,PeriodJumpField * p, UnknownsIndexer * idx)
 {
     // Point crossfield and pjumpfield
     this->crossfield = c;
     this->pjumpfield = p;
-    this->mask = m;
-
     // Index
     this->index = idx;
 

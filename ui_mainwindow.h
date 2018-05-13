@@ -13,13 +13,13 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QVBoxLayout>
@@ -50,7 +50,9 @@ public:
     QPushButton *load_curvature;
     QPushButton *load_mask;
     QPushButton *load_convexity;
-    QCheckBox *show_cross_fields;
+    QRadioButton *show_crossfields;
+    QRadioButton *show_normals;
+    QRadioButton *show_shading;
     QPushButton *export_shading;
     QSpacerItem *verticalSpacer;
     QStatusBar *statusbar;
@@ -170,18 +172,27 @@ public:
 
         verticalLayout_2->addLayout(gridLayout_2);
 
-        show_cross_fields = new QCheckBox(centralwidget);
-        show_cross_fields->setObjectName(QStringLiteral("show_cross_fields"));
-        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(show_cross_fields->sizePolicy().hasHeightForWidth());
-        show_cross_fields->setSizePolicy(sizePolicy);
+        show_crossfields = new QRadioButton(centralwidget);
+        show_crossfields->setObjectName(QStringLiteral("show_crossfields"));
 
-        verticalLayout_2->addWidget(show_cross_fields);
+        verticalLayout_2->addWidget(show_crossfields);
+
+        show_normals = new QRadioButton(centralwidget);
+        show_normals->setObjectName(QStringLiteral("show_normals"));
+
+        verticalLayout_2->addWidget(show_normals);
+
+        show_shading = new QRadioButton(centralwidget);
+        show_shading->setObjectName(QStringLiteral("show_shading"));
+        show_shading->setChecked(true);
+
+        verticalLayout_2->addWidget(show_shading);
 
         export_shading = new QPushButton(centralwidget);
         export_shading->setObjectName(QStringLiteral("export_shading"));
+        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(export_shading->sizePolicy().hasHeightForWidth());
         export_shading->setSizePolicy(sizePolicy);
 
@@ -247,7 +258,9 @@ public:
         load_convexity->setToolTip(QApplication::translate("MainWindow", "Load BendField", nullptr));
 #endif // QT_NO_TOOLTIP
         load_convexity->setText(QString());
-        show_cross_fields->setText(QApplication::translate("MainWindow", "Show cross fields", nullptr));
+        show_crossfields->setText(QApplication::translate("MainWindow", "Show crossfield", nullptr));
+        show_normals->setText(QApplication::translate("MainWindow", "Show normals", nullptr));
+        show_shading->setText(QApplication::translate("MainWindow", "Show shading", nullptr));
         export_shading->setText(QApplication::translate("MainWindow", "Export shading", nullptr));
     } // retranslateUi
 

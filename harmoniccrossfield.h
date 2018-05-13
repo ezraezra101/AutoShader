@@ -102,9 +102,6 @@ class HarmonicCrossField
     // the unknowns in the crossfield.
     UnknownsIndexer * index;
 
-    // Masked region in the input crossfield
-    Mat mask;
-
     // Size of the crossfield
     int h,w;
 
@@ -163,8 +160,7 @@ public:
     // Crossfield (init with the input constraints)
     // Period Jumps (init with 0 when posible - see Greedy mixed-integer optimization section in paper)
     // Unknown Index (indexing constrained cels in the crosfield)
-    // Mask (the mask for selected region to solve for)
-    HarmonicCrossField(CrossField * ,PeriodJumpField *, UnknownsIndexer *, Mat);
+    HarmonicCrossField(CrossField * ,PeriodJumpField *, UnknownsIndexer *);
 
     // Iterative stitching method for solving the field
     void smoothWithIterativeGreedy();
