@@ -68,7 +68,8 @@ SOURCES       = main.cpp \
 		bendfield.cpp \
 		normalfield.cpp \
 		canvas.cpp \
-		workerthread.cpp qrc_resources.cpp \
+		workerthread.cpp \
+		crossfield3d.cpp qrc_resources.cpp \
 		moc_mainwindow.cpp \
 		moc_glwidget.cpp
 OBJECTS       = main.o \
@@ -90,6 +91,7 @@ OBJECTS       = main.o \
 		normalfield.o \
 		canvas.o \
 		workerthread.o \
+		crossfield3d.o \
 		qrc_resources.o \
 		moc_mainwindow.o \
 		moc_glwidget.o
@@ -296,7 +298,8 @@ DIST          = /usr/local/Cellar/qt/5.10.1/mkspecs/features/spec_pre.prf \
 		bendfield.h \
 		normalfield.h \
 		canvas.h \
-		workerthread.h main.cpp \
+		workerthread.h \
+		crossfield3d.h main.cpp \
 		distancetransform.cpp \
 		labeledmap.cpp \
 		crossfield.cpp \
@@ -314,7 +317,8 @@ DIST          = /usr/local/Cellar/qt/5.10.1/mkspecs/features/spec_pre.prf \
 		bendfield.cpp \
 		normalfield.cpp \
 		canvas.cpp \
-		workerthread.cpp
+		workerthread.cpp \
+		crossfield3d.cpp
 QMAKE_TARGET  = BendFields_OSX
 DESTDIR       = 
 TARGET        = BendFields_OSX
@@ -732,8 +736,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents resources.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/local/Cellar/qt/5.10.1/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents distancetransform.h labeledmap.h crossfield.h tangentmap.h vec2doperations.h periodjumpfield.h vec3doperations.h mainwindow.h glwidget.h crossfieldgraphic.h imageconverter.h filterlineintegralconvolution.h ui_mainwindow.h unknownsindexer.h harmoniccrossfield.h bendfield.h normalfield.h canvas.h workerthread.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp distancetransform.cpp labeledmap.cpp crossfield.cpp tangentmap.cpp vec2doperations.cpp periodjumpfield.cpp vec3doperations.cpp mainwindow.cpp glwidget.cpp crossfieldgraphic.cpp imageconverter.cpp filterlineintegralconvolution.cpp unknownsindexer.cpp harmoniccrossfield.cpp bendfield.cpp normalfield.cpp canvas.cpp workerthread.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents distancetransform.h labeledmap.h crossfield.h tangentmap.h vec2doperations.h periodjumpfield.h vec3doperations.h mainwindow.h glwidget.h crossfieldgraphic.h imageconverter.h filterlineintegralconvolution.h ui_mainwindow.h unknownsindexer.h harmoniccrossfield.h bendfield.h normalfield.h canvas.h workerthread.h crossfield3d.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp distancetransform.cpp labeledmap.cpp crossfield.cpp tangentmap.cpp vec2doperations.cpp periodjumpfield.cpp vec3doperations.cpp mainwindow.cpp glwidget.cpp crossfieldgraphic.cpp imageconverter.cpp filterlineintegralconvolution.cpp unknownsindexer.cpp harmoniccrossfield.cpp bendfield.cpp normalfield.cpp canvas.cpp workerthread.cpp crossfield3d.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
 
@@ -1031,6 +1035,8 @@ moc_mainwindow.cpp: workerthread.h \
 		/usr/local/include/tbb/task_scheduler_init.h \
 		/usr/local/include/tbb/task_scheduler_observer.h \
 		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/eigen.hpp \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
 		crossfield.h \
 		tangentmap.h \
 		vec2doperations.h \
@@ -1069,21 +1075,16 @@ moc_mainwindow.cpp: workerthread.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomDocument \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/qdom.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomElement \
-		crossfieldgraphic.h \
-		normalfield.h \
-		vec3doperations.h \
-		imageconverter.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QLinearGradient \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qbrush.h \
+		glwidget.h \
+		canvas.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPen \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpen.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QFont \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
+		imageconverter.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QMainWindow \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QMessageBox \
@@ -1099,315 +1100,22 @@ moc_mainwindow.cpp: workerthread.h \
 		/usr/local/Cellar/qt/5.10.1/bin/moc
 	/usr/local/Cellar/qt/5.10.1/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/local/Cellar/qt/5.10.1/mkspecs/macx-clang -I/Users/ezradavis/Desktop/BendFields_OSX -I/usr/include/opencv -I/Users/ezradavis/Desktop/BendFields_OSX/src -I/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv -I/usr/local/Cellar/opencv@2/2.4.13.6/include -I/usr/local/include -I/usr/local/include/opencv -I/usr/local/include/opencv2 -I/Users/usr/local/include -I/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers -I/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers -I/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk/usr/include -F/usr/local/Cellar/qt/5.10.1/lib mainwindow.h -o moc_mainwindow.cpp
 
-moc_glwidget.cpp: crossfieldgraphic.h \
-		crossfield.h \
-		tangentmap.h \
-		vec2doperations.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv/cv.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/core_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/types_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/core.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/version.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/operations.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/mat.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/imgproc/imgproc_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/imgproc/types_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/imgproc/imgproc.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/video/tracking.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/features2d/features2d.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/miniflann.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/defines.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/config.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/flann.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/flann_base.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/general.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/matrix.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/params.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/any.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/saving.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/nn_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/result_set.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/all_indices.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/kdtree_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/dynamic_bitset.h \
-		/usr/local/include/boost/dynamic_bitset.hpp \
-		/usr/local/include/boost/dynamic_bitset/dynamic_bitset.hpp \
-		/usr/local/include/boost/dynamic_bitset/config.hpp \
-		/usr/local/include/boost/config.hpp \
-		/usr/local/include/boost/config/user.hpp \
-		/usr/local/include/boost/config/detail/select_compiler_config.hpp \
-		/usr/local/include/boost/config/compiler/nvcc.hpp \
-		/usr/local/include/boost/config/compiler/gcc_xml.hpp \
-		/usr/local/include/boost/config/compiler/cray.hpp \
-		/usr/local/include/boost/config/compiler/common_edg.hpp \
-		/usr/local/include/boost/config/compiler/comeau.hpp \
-		/usr/local/include/boost/config/compiler/pathscale.hpp \
-		/usr/local/include/boost/config/compiler/clang.hpp \
-		/usr/local/include/boost/config/compiler/intel.hpp \
-		/usr/local/include/boost/config/compiler/visualc.hpp \
-		/usr/local/include/boost/config/pragma_message.hpp \
-		/usr/local/include/boost/config/helper_macros.hpp \
-		/usr/local/include/boost/config/compiler/gcc.hpp \
-		/usr/local/include/boost/config/compiler/digitalmars.hpp \
-		/usr/local/include/boost/config/compiler/kai.hpp \
-		/usr/local/include/boost/config/compiler/sgi_mipspro.hpp \
-		/usr/local/include/boost/config/compiler/compaq_cxx.hpp \
-		/usr/local/include/boost/config/compiler/greenhills.hpp \
-		/usr/local/include/boost/config/compiler/codegear.hpp \
-		/usr/local/include/boost/config/compiler/borland.hpp \
-		/usr/local/include/boost/config/compiler/metrowerks.hpp \
-		/usr/local/include/boost/config/compiler/sunpro_cc.hpp \
-		/usr/local/include/boost/config/compiler/hp_acc.hpp \
-		/usr/local/include/boost/config/compiler/mpw.hpp \
-		/usr/local/include/boost/config/compiler/xlcpp_zos.hpp \
-		/usr/local/include/boost/config/compiler/xlcpp.hpp \
-		/usr/local/include/boost/config/compiler/vacpp.hpp \
-		/usr/local/include/boost/config/compiler/pgi.hpp \
-		/usr/local/include/boost/config/detail/select_stdlib_config.hpp \
-		/usr/local/include/boost/config/stdlib/stlport.hpp \
-		/usr/local/include/boost/config/stdlib/libcomo.hpp \
-		/usr/local/include/boost/config/no_tr1/utility.hpp \
-		/usr/local/include/boost/config/stdlib/roguewave.hpp \
-		/usr/local/include/boost/config/stdlib/libcpp.hpp \
-		/usr/local/include/boost/config/stdlib/libstdcpp3.hpp \
-		/usr/local/include/boost/config/stdlib/sgi.hpp \
-		/usr/local/include/boost/config/stdlib/msl.hpp \
-		/usr/local/include/boost/config/detail/posix_features.hpp \
-		/usr/local/include/boost/config/stdlib/xlcpp_zos.hpp \
-		/usr/local/include/boost/config/stdlib/vacpp.hpp \
-		/usr/local/include/boost/config/stdlib/modena.hpp \
-		/usr/local/include/boost/config/stdlib/dinkumware.hpp \
-		/usr/local/include/boost/config/detail/select_platform_config.hpp \
-		/usr/local/include/boost/config/platform/linux.hpp \
-		/usr/local/include/boost/config/platform/bsd.hpp \
-		/usr/local/include/boost/config/platform/solaris.hpp \
-		/usr/local/include/boost/config/platform/irix.hpp \
-		/usr/local/include/boost/config/platform/hpux.hpp \
-		/usr/local/include/boost/config/platform/cygwin.hpp \
-		/usr/local/include/boost/config/platform/win32.hpp \
-		/usr/local/include/boost/config/platform/beos.hpp \
-		/usr/local/include/boost/config/platform/macos.hpp \
-		/usr/local/include/boost/config/platform/zos.hpp \
-		/usr/local/include/boost/config/platform/aix.hpp \
-		/usr/local/include/boost/config/platform/amigaos.hpp \
-		/usr/local/include/boost/config/platform/qnxnto.hpp \
-		/usr/local/include/boost/config/platform/vxworks.hpp \
-		/usr/local/include/boost/config/platform/symbian.hpp \
-		/usr/local/include/boost/config/platform/cray.hpp \
-		/usr/local/include/boost/config/platform/vms.hpp \
-		/usr/local/include/boost/config/detail/suffix.hpp \
-		/usr/local/include/boost/detail/workaround.hpp \
-		/usr/local/include/boost/config/workaround.hpp \
-		/usr/local/include/boost/dynamic_bitset_fwd.hpp \
-		/usr/local/include/boost/detail/dynamic_bitset.hpp \
-		/usr/local/include/boost/detail/iterator.hpp \
-		/usr/local/include/boost/move/move.hpp \
-		/usr/local/include/boost/move/detail/config_begin.hpp \
-		/usr/local/include/boost/move/utility.hpp \
-		/usr/local/include/boost/move/detail/workaround.hpp \
-		/usr/local/include/boost/move/utility_core.hpp \
-		/usr/local/include/boost/move/core.hpp \
-		/usr/local/include/boost/move/detail/type_traits.hpp \
-		/usr/local/include/boost/move/detail/meta_utils.hpp \
-		/usr/local/include/boost/move/detail/meta_utils_core.hpp \
-		/usr/local/include/boost/move/detail/config_end.hpp \
-		/usr/local/include/boost/assert.hpp \
-		/usr/local/include/boost/current_function.hpp \
-		/usr/local/include/boost/static_assert.hpp \
-		/usr/local/include/boost/move/traits.hpp \
-		/usr/local/include/boost/move/iterator.hpp \
-		/usr/local/include/boost/move/detail/iterator_traits.hpp \
-		/usr/local/include/boost/move/detail/std_ns_begin.hpp \
-		/usr/local/include/boost/move/detail/std_ns_end.hpp \
-		/usr/local/include/boost/move/algorithm.hpp \
-		/usr/local/include/boost/move/algo/move.hpp \
-		/usr/local/include/boost/move/detail/iterator_to_raw_pointer.hpp \
-		/usr/local/include/boost/move/detail/to_raw_pointer.hpp \
-		/usr/local/include/boost/move/detail/pointer_element.hpp \
-		/usr/local/include/boost/detail/no_exceptions_support.hpp \
-		/usr/local/include/boost/core/no_exceptions_support.hpp \
-		/usr/local/include/boost/limits.hpp \
-		/usr/local/include/boost/pending/lowest_bit.hpp \
-		/usr/local/include/boost/integer/integer_log2.hpp \
-		/usr/local/include/boost/utility/addressof.hpp \
-		/usr/local/include/boost/core/addressof.hpp \
-		/usr/local/include/boost/throw_exception.hpp \
-		/usr/local/include/boost/exception/exception.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/dist.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/heap.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/allocator.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/random.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/kdtree_single_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/kmeans_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/logger.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/composite_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/linear_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/hierarchical_clustering_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/lsh_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/lsh_table.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/autotuned_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/ground_truth.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/index_testing.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/timer.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/sampling.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/calib3d/calib3d.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/affine.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/objdetect/objdetect.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/legacy/compat.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/internal.hpp \
-		/usr/local/include/tbb/tbb_stddef.h \
-		/usr/local/include/tbb/tbb_config.h \
-		/usr/local/include/tbb/internal/_tbb_windef.h \
-		/usr/local/include/tbb/tbb.h \
-		/usr/local/include/tbb/aggregator.h \
-		/usr/local/include/tbb/atomic.h \
-		/usr/local/include/tbb/tbb_machine.h \
-		/usr/local/include/tbb/machine/gcc_generic.h \
-		/usr/local/include/tbb/machine/gcc_itsx.h \
-		/usr/local/include/tbb/machine/linux_intel64.h \
-		/usr/local/include/tbb/machine/gcc_ia32_common.h \
-		/usr/local/include/tbb/machine/linux_ia32.h \
-		/usr/local/include/tbb/machine/icc_generic.h \
-		/usr/local/include/tbb/machine/msvc_ia32_common.h \
-		/usr/local/include/tbb/machine/windows_ia32.h \
-		/usr/local/include/tbb/machine/windows_intel64.h \
-		/usr/local/include/tbb/machine/msvc_armv7.h \
-		/usr/local/include/tbb/machine/mic_common.h \
-		/usr/local/include/tbb/machine/linux_ia64.h \
-		/usr/local/include/tbb/machine/mac_ppc.h \
-		/usr/local/include/tbb/machine/gcc_armv7.h \
-		/usr/local/include/tbb/machine/linux_common.h \
-		/usr/local/include/tbb/machine/macos_common.h \
-		/usr/local/include/tbb/machine/ibm_aix51.h \
-		/usr/local/include/tbb/machine/sunos_sparc.h \
-		/usr/local/include/tbb/tbb_profiling.h \
-		/usr/local/include/tbb/internal/_tbb_strings.h \
-		/usr/local/include/tbb/aligned_space.h \
-		/usr/local/include/tbb/blocked_range.h \
-		/usr/local/include/tbb/blocked_range2d.h \
-		/usr/local/include/tbb/blocked_range3d.h \
-		/usr/local/include/tbb/cache_aligned_allocator.h \
-		/usr/local/include/tbb/combinable.h \
-		/usr/local/include/tbb/enumerable_thread_specific.h \
-		/usr/local/include/tbb/concurrent_vector.h \
-		/usr/local/include/tbb/tbb_exception.h \
-		/usr/local/include/tbb/tbb_allocator.h \
-		/usr/local/include/tbb/tbb_thread.h \
-		/usr/local/include/tbb/machine/windows_api.h \
-		/usr/local/include/tbb/internal/_tbb_hash_compare_impl.h \
-		/usr/local/include/tbb/tick_count.h \
-		/usr/local/include/tbb/internal/_template_helpers.h \
-		/usr/local/include/tbb/concurrent_hash_map.h \
-		/usr/local/include/tbb/spin_rw_mutex.h \
-		/usr/local/include/tbb/internal/_mutex_padding.h \
-		/usr/local/include/tbb/internal/_x86_rtm_rw_mutex_impl.h \
-		/usr/local/include/tbb/concurrent_lru_cache.h \
-		/usr/local/include/tbb/internal/_aggregator_impl.h \
-		/usr/local/include/tbb/concurrent_priority_queue.h \
-		/usr/local/include/tbb/concurrent_queue.h \
-		/usr/local/include/tbb/internal/_concurrent_queue_impl.h \
-		/usr/local/include/tbb/spin_mutex.h \
-		/usr/local/include/tbb/internal/_x86_eliding_mutex_impl.h \
-		/usr/local/include/tbb/concurrent_unordered_map.h \
-		/usr/local/include/tbb/internal/_concurrent_unordered_impl.h \
-		/usr/local/include/tbb/concurrent_unordered_set.h \
-		/usr/local/include/tbb/critical_section.h \
-		/usr/local/include/tbb/flow_graph.h \
-		/usr/local/include/tbb/null_mutex.h \
-		/usr/local/include/tbb/null_rw_mutex.h \
-		/usr/local/include/tbb/task.h \
-		/usr/local/include/tbb/task_arena.h \
-		/usr/local/include/tbb/compat/tuple \
-		/usr/local/include/tbb/internal/_flow_graph_impl.h \
-		/usr/local/include/tbb/flow_graph_abstractions.h \
-		/usr/local/include/tbb/internal/_flow_graph_trace_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_body_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_cache_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_types_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_async_msg_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_node_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_item_buffer_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_join_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_tagged_buffer_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_indexer_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_streaming_node.h \
-		/usr/local/include/tbb/global_control.h \
-		/usr/local/include/tbb/mutex.h \
-		/usr/local/include/tbb/parallel_do.h \
-		/usr/local/include/tbb/internal/_range_iterator.h \
-		/usr/local/include/tbb/parallel_for.h \
-		/usr/local/include/tbb/partitioner.h \
-		/usr/local/include/tbb/internal/_tbb_trace_impl.h \
-		/usr/local/include/tbb/parallel_for_each.h \
-		/usr/local/include/tbb/parallel_invoke.h \
-		/usr/local/include/tbb/parallel_reduce.h \
-		/usr/local/include/tbb/parallel_scan.h \
-		/usr/local/include/tbb/parallel_sort.h \
-		/usr/local/include/tbb/pipeline.h \
-		/usr/local/include/tbb/queuing_mutex.h \
-		/usr/local/include/tbb/queuing_rw_mutex.h \
-		/usr/local/include/tbb/reader_writer_lock.h \
-		/usr/local/include/tbb/recursive_mutex.h \
-		/usr/local/include/tbb/task_group.h \
-		/usr/local/include/tbb/task_scheduler_init.h \
-		/usr/local/include/tbb/task_scheduler_observer.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/eigen.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv/highgui.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/highgui/highgui_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/highgui/highgui.hpp \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QDebug \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdebug.h \
-		labeledmap.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QPoint \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qpoint.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QMap \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qmap.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QMultiMap \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QRgb \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qrgb.h \
-		filterlineintegralconvolution.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QList \
+moc_glwidget.cpp: canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qevent.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QColor \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qcolor.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QFile \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qfile.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPainter \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpainter.h \
-		unknownsindexer.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QHash \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qhash.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QStringList \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qstringlist.h \
-		periodjumpfield.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QPair \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qpair.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QVector \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qvector.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomDocument \
-		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/qdom.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomElement \
-		normalfield.h \
-		vec3doperations.h \
-		imageconverter.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QLinearGradient \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qbrush.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPen \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpen.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QFont \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
-		canvas.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QList \
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QPoint \
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qpoint.h \
 		glwidget.h \
 		moc_predefs.h \
 		/usr/local/Cellar/qt/5.10.1/bin/moc
@@ -1423,315 +1131,22 @@ compiler_uic_clean:
 ui_mainwindow.h: mainwindow.ui \
 		/usr/local/Cellar/qt/5.10.1/bin/uic \
 		glwidget.h \
-		crossfieldgraphic.h \
-		crossfield.h \
-		tangentmap.h \
-		vec2doperations.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv/cv.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/core_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/types_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/core.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/version.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/operations.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/mat.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/imgproc/imgproc_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/imgproc/types_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/imgproc/imgproc.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/video/tracking.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/features2d/features2d.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/miniflann.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/defines.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/config.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/flann.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/flann_base.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/general.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/matrix.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/params.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/any.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/saving.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/nn_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/result_set.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/all_indices.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/kdtree_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/dynamic_bitset.h \
-		/usr/local/include/boost/dynamic_bitset.hpp \
-		/usr/local/include/boost/dynamic_bitset/dynamic_bitset.hpp \
-		/usr/local/include/boost/dynamic_bitset/config.hpp \
-		/usr/local/include/boost/config.hpp \
-		/usr/local/include/boost/config/user.hpp \
-		/usr/local/include/boost/config/detail/select_compiler_config.hpp \
-		/usr/local/include/boost/config/compiler/nvcc.hpp \
-		/usr/local/include/boost/config/compiler/gcc_xml.hpp \
-		/usr/local/include/boost/config/compiler/cray.hpp \
-		/usr/local/include/boost/config/compiler/common_edg.hpp \
-		/usr/local/include/boost/config/compiler/comeau.hpp \
-		/usr/local/include/boost/config/compiler/pathscale.hpp \
-		/usr/local/include/boost/config/compiler/clang.hpp \
-		/usr/local/include/boost/config/compiler/intel.hpp \
-		/usr/local/include/boost/config/compiler/visualc.hpp \
-		/usr/local/include/boost/config/pragma_message.hpp \
-		/usr/local/include/boost/config/helper_macros.hpp \
-		/usr/local/include/boost/config/compiler/gcc.hpp \
-		/usr/local/include/boost/config/compiler/digitalmars.hpp \
-		/usr/local/include/boost/config/compiler/kai.hpp \
-		/usr/local/include/boost/config/compiler/sgi_mipspro.hpp \
-		/usr/local/include/boost/config/compiler/compaq_cxx.hpp \
-		/usr/local/include/boost/config/compiler/greenhills.hpp \
-		/usr/local/include/boost/config/compiler/codegear.hpp \
-		/usr/local/include/boost/config/compiler/borland.hpp \
-		/usr/local/include/boost/config/compiler/metrowerks.hpp \
-		/usr/local/include/boost/config/compiler/sunpro_cc.hpp \
-		/usr/local/include/boost/config/compiler/hp_acc.hpp \
-		/usr/local/include/boost/config/compiler/mpw.hpp \
-		/usr/local/include/boost/config/compiler/xlcpp_zos.hpp \
-		/usr/local/include/boost/config/compiler/xlcpp.hpp \
-		/usr/local/include/boost/config/compiler/vacpp.hpp \
-		/usr/local/include/boost/config/compiler/pgi.hpp \
-		/usr/local/include/boost/config/detail/select_stdlib_config.hpp \
-		/usr/local/include/boost/config/stdlib/stlport.hpp \
-		/usr/local/include/boost/config/stdlib/libcomo.hpp \
-		/usr/local/include/boost/config/no_tr1/utility.hpp \
-		/usr/local/include/boost/config/stdlib/roguewave.hpp \
-		/usr/local/include/boost/config/stdlib/libcpp.hpp \
-		/usr/local/include/boost/config/stdlib/libstdcpp3.hpp \
-		/usr/local/include/boost/config/stdlib/sgi.hpp \
-		/usr/local/include/boost/config/stdlib/msl.hpp \
-		/usr/local/include/boost/config/detail/posix_features.hpp \
-		/usr/local/include/boost/config/stdlib/xlcpp_zos.hpp \
-		/usr/local/include/boost/config/stdlib/vacpp.hpp \
-		/usr/local/include/boost/config/stdlib/modena.hpp \
-		/usr/local/include/boost/config/stdlib/dinkumware.hpp \
-		/usr/local/include/boost/config/detail/select_platform_config.hpp \
-		/usr/local/include/boost/config/platform/linux.hpp \
-		/usr/local/include/boost/config/platform/bsd.hpp \
-		/usr/local/include/boost/config/platform/solaris.hpp \
-		/usr/local/include/boost/config/platform/irix.hpp \
-		/usr/local/include/boost/config/platform/hpux.hpp \
-		/usr/local/include/boost/config/platform/cygwin.hpp \
-		/usr/local/include/boost/config/platform/win32.hpp \
-		/usr/local/include/boost/config/platform/beos.hpp \
-		/usr/local/include/boost/config/platform/macos.hpp \
-		/usr/local/include/boost/config/platform/zos.hpp \
-		/usr/local/include/boost/config/platform/aix.hpp \
-		/usr/local/include/boost/config/platform/amigaos.hpp \
-		/usr/local/include/boost/config/platform/qnxnto.hpp \
-		/usr/local/include/boost/config/platform/vxworks.hpp \
-		/usr/local/include/boost/config/platform/symbian.hpp \
-		/usr/local/include/boost/config/platform/cray.hpp \
-		/usr/local/include/boost/config/platform/vms.hpp \
-		/usr/local/include/boost/config/detail/suffix.hpp \
-		/usr/local/include/boost/detail/workaround.hpp \
-		/usr/local/include/boost/config/workaround.hpp \
-		/usr/local/include/boost/dynamic_bitset_fwd.hpp \
-		/usr/local/include/boost/detail/dynamic_bitset.hpp \
-		/usr/local/include/boost/detail/iterator.hpp \
-		/usr/local/include/boost/move/move.hpp \
-		/usr/local/include/boost/move/detail/config_begin.hpp \
-		/usr/local/include/boost/move/utility.hpp \
-		/usr/local/include/boost/move/detail/workaround.hpp \
-		/usr/local/include/boost/move/utility_core.hpp \
-		/usr/local/include/boost/move/core.hpp \
-		/usr/local/include/boost/move/detail/type_traits.hpp \
-		/usr/local/include/boost/move/detail/meta_utils.hpp \
-		/usr/local/include/boost/move/detail/meta_utils_core.hpp \
-		/usr/local/include/boost/move/detail/config_end.hpp \
-		/usr/local/include/boost/assert.hpp \
-		/usr/local/include/boost/current_function.hpp \
-		/usr/local/include/boost/static_assert.hpp \
-		/usr/local/include/boost/move/traits.hpp \
-		/usr/local/include/boost/move/iterator.hpp \
-		/usr/local/include/boost/move/detail/iterator_traits.hpp \
-		/usr/local/include/boost/move/detail/std_ns_begin.hpp \
-		/usr/local/include/boost/move/detail/std_ns_end.hpp \
-		/usr/local/include/boost/move/algorithm.hpp \
-		/usr/local/include/boost/move/algo/move.hpp \
-		/usr/local/include/boost/move/detail/iterator_to_raw_pointer.hpp \
-		/usr/local/include/boost/move/detail/to_raw_pointer.hpp \
-		/usr/local/include/boost/move/detail/pointer_element.hpp \
-		/usr/local/include/boost/detail/no_exceptions_support.hpp \
-		/usr/local/include/boost/core/no_exceptions_support.hpp \
-		/usr/local/include/boost/limits.hpp \
-		/usr/local/include/boost/pending/lowest_bit.hpp \
-		/usr/local/include/boost/integer/integer_log2.hpp \
-		/usr/local/include/boost/utility/addressof.hpp \
-		/usr/local/include/boost/core/addressof.hpp \
-		/usr/local/include/boost/throw_exception.hpp \
-		/usr/local/include/boost/exception/exception.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/dist.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/heap.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/allocator.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/random.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/kdtree_single_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/kmeans_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/logger.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/composite_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/linear_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/hierarchical_clustering_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/lsh_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/lsh_table.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/autotuned_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/ground_truth.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/index_testing.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/timer.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/sampling.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/calib3d/calib3d.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/affine.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/objdetect/objdetect.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/legacy/compat.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/internal.hpp \
-		/usr/local/include/tbb/tbb_stddef.h \
-		/usr/local/include/tbb/tbb_config.h \
-		/usr/local/include/tbb/internal/_tbb_windef.h \
-		/usr/local/include/tbb/tbb.h \
-		/usr/local/include/tbb/aggregator.h \
-		/usr/local/include/tbb/atomic.h \
-		/usr/local/include/tbb/tbb_machine.h \
-		/usr/local/include/tbb/machine/gcc_generic.h \
-		/usr/local/include/tbb/machine/gcc_itsx.h \
-		/usr/local/include/tbb/machine/linux_intel64.h \
-		/usr/local/include/tbb/machine/gcc_ia32_common.h \
-		/usr/local/include/tbb/machine/linux_ia32.h \
-		/usr/local/include/tbb/machine/icc_generic.h \
-		/usr/local/include/tbb/machine/msvc_ia32_common.h \
-		/usr/local/include/tbb/machine/windows_ia32.h \
-		/usr/local/include/tbb/machine/windows_intel64.h \
-		/usr/local/include/tbb/machine/msvc_armv7.h \
-		/usr/local/include/tbb/machine/mic_common.h \
-		/usr/local/include/tbb/machine/linux_ia64.h \
-		/usr/local/include/tbb/machine/mac_ppc.h \
-		/usr/local/include/tbb/machine/gcc_armv7.h \
-		/usr/local/include/tbb/machine/linux_common.h \
-		/usr/local/include/tbb/machine/macos_common.h \
-		/usr/local/include/tbb/machine/ibm_aix51.h \
-		/usr/local/include/tbb/machine/sunos_sparc.h \
-		/usr/local/include/tbb/tbb_profiling.h \
-		/usr/local/include/tbb/internal/_tbb_strings.h \
-		/usr/local/include/tbb/aligned_space.h \
-		/usr/local/include/tbb/blocked_range.h \
-		/usr/local/include/tbb/blocked_range2d.h \
-		/usr/local/include/tbb/blocked_range3d.h \
-		/usr/local/include/tbb/cache_aligned_allocator.h \
-		/usr/local/include/tbb/combinable.h \
-		/usr/local/include/tbb/enumerable_thread_specific.h \
-		/usr/local/include/tbb/concurrent_vector.h \
-		/usr/local/include/tbb/tbb_exception.h \
-		/usr/local/include/tbb/tbb_allocator.h \
-		/usr/local/include/tbb/tbb_thread.h \
-		/usr/local/include/tbb/machine/windows_api.h \
-		/usr/local/include/tbb/internal/_tbb_hash_compare_impl.h \
-		/usr/local/include/tbb/tick_count.h \
-		/usr/local/include/tbb/internal/_template_helpers.h \
-		/usr/local/include/tbb/concurrent_hash_map.h \
-		/usr/local/include/tbb/spin_rw_mutex.h \
-		/usr/local/include/tbb/internal/_mutex_padding.h \
-		/usr/local/include/tbb/internal/_x86_rtm_rw_mutex_impl.h \
-		/usr/local/include/tbb/concurrent_lru_cache.h \
-		/usr/local/include/tbb/internal/_aggregator_impl.h \
-		/usr/local/include/tbb/concurrent_priority_queue.h \
-		/usr/local/include/tbb/concurrent_queue.h \
-		/usr/local/include/tbb/internal/_concurrent_queue_impl.h \
-		/usr/local/include/tbb/spin_mutex.h \
-		/usr/local/include/tbb/internal/_x86_eliding_mutex_impl.h \
-		/usr/local/include/tbb/concurrent_unordered_map.h \
-		/usr/local/include/tbb/internal/_concurrent_unordered_impl.h \
-		/usr/local/include/tbb/concurrent_unordered_set.h \
-		/usr/local/include/tbb/critical_section.h \
-		/usr/local/include/tbb/flow_graph.h \
-		/usr/local/include/tbb/null_mutex.h \
-		/usr/local/include/tbb/null_rw_mutex.h \
-		/usr/local/include/tbb/task.h \
-		/usr/local/include/tbb/task_arena.h \
-		/usr/local/include/tbb/compat/tuple \
-		/usr/local/include/tbb/internal/_flow_graph_impl.h \
-		/usr/local/include/tbb/flow_graph_abstractions.h \
-		/usr/local/include/tbb/internal/_flow_graph_trace_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_body_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_cache_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_types_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_async_msg_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_node_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_item_buffer_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_join_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_tagged_buffer_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_indexer_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_streaming_node.h \
-		/usr/local/include/tbb/global_control.h \
-		/usr/local/include/tbb/mutex.h \
-		/usr/local/include/tbb/parallel_do.h \
-		/usr/local/include/tbb/internal/_range_iterator.h \
-		/usr/local/include/tbb/parallel_for.h \
-		/usr/local/include/tbb/partitioner.h \
-		/usr/local/include/tbb/internal/_tbb_trace_impl.h \
-		/usr/local/include/tbb/parallel_for_each.h \
-		/usr/local/include/tbb/parallel_invoke.h \
-		/usr/local/include/tbb/parallel_reduce.h \
-		/usr/local/include/tbb/parallel_scan.h \
-		/usr/local/include/tbb/parallel_sort.h \
-		/usr/local/include/tbb/pipeline.h \
-		/usr/local/include/tbb/queuing_mutex.h \
-		/usr/local/include/tbb/queuing_rw_mutex.h \
-		/usr/local/include/tbb/reader_writer_lock.h \
-		/usr/local/include/tbb/recursive_mutex.h \
-		/usr/local/include/tbb/task_group.h \
-		/usr/local/include/tbb/task_scheduler_init.h \
-		/usr/local/include/tbb/task_scheduler_observer.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/eigen.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv/highgui.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/highgui/highgui_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/highgui/highgui.hpp \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QDebug \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdebug.h \
-		labeledmap.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QPoint \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qpoint.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QMap \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qmap.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QMultiMap \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QRgb \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qrgb.h \
-		filterlineintegralconvolution.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QList \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qevent.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QColor \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qcolor.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QFile \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qfile.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPainter \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpainter.h \
-		unknownsindexer.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QHash \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qhash.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QStringList \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qstringlist.h \
-		periodjumpfield.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QPair \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qpair.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QVector \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qvector.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomDocument \
-		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/qdom.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomElement \
-		normalfield.h \
-		vec3doperations.h \
-		imageconverter.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QLinearGradient \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qbrush.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPen \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpen.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QFont \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
-		canvas.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
-		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h
+		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QList \
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QPoint \
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qpoint.h
 	/usr/local/Cellar/qt/5.10.1/bin/uic mainwindow.ui -o ui_mainwindow.h
 
 compiler_rez_source_make_all:
@@ -2036,28 +1451,18 @@ main.o: main.cpp distancetransform.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomElement \
 		harmoniccrossfield.h \
 		glwidget.h \
-		crossfieldgraphic.h \
-		normalfield.h \
-		vec3doperations.h \
-		imageconverter.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QLinearGradient \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qbrush.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPen \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpen.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QFont \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
-		canvas.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
 		eigen/Eigen/Eigen \
 		eigen/Eigen/Dense \
 		eigen/Eigen/Core \
@@ -2320,6 +1725,7 @@ main.o: main.cpp distancetransform.h \
 		eigen/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h \
 		mainwindow.h \
 		workerthread.h \
+		imageconverter.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QMainWindow \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QMessageBox \
@@ -4255,6 +3661,8 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		/usr/local/include/tbb/task_scheduler_init.h \
 		/usr/local/include/tbb/task_scheduler_observer.h \
 		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/eigen.hpp \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
 		crossfield.h \
 		tangentmap.h \
 		vec2doperations.h \
@@ -4293,21 +3701,16 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomDocument \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/qdom.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomElement \
-		crossfieldgraphic.h \
-		normalfield.h \
-		vec3doperations.h \
-		imageconverter.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QLinearGradient \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qbrush.h \
+		glwidget.h \
+		canvas.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPen \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpen.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QFont \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
+		imageconverter.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QMainWindow \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QMessageBox \
@@ -4318,327 +3721,26 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qstyle.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QDesktopWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qdesktopwidget.h \
-		ui_mainwindow.h \
-		glwidget.h \
-		canvas.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
-		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
-		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h
+		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 glwidget.o: glwidget.cpp glwidget.h \
-		crossfieldgraphic.h \
-		crossfield.h \
-		tangentmap.h \
-		vec2doperations.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv/cv.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/core_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/types_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/core.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/version.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/operations.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/mat.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/imgproc/imgproc_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/imgproc/types_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/imgproc/imgproc.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/video/tracking.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/features2d/features2d.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/miniflann.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/defines.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/config.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/flann.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/flann_base.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/general.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/matrix.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/params.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/any.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/saving.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/nn_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/result_set.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/all_indices.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/kdtree_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/dynamic_bitset.h \
-		/usr/local/include/boost/dynamic_bitset.hpp \
-		/usr/local/include/boost/dynamic_bitset/dynamic_bitset.hpp \
-		/usr/local/include/boost/dynamic_bitset/config.hpp \
-		/usr/local/include/boost/config.hpp \
-		/usr/local/include/boost/config/user.hpp \
-		/usr/local/include/boost/config/detail/select_compiler_config.hpp \
-		/usr/local/include/boost/config/compiler/nvcc.hpp \
-		/usr/local/include/boost/config/compiler/gcc_xml.hpp \
-		/usr/local/include/boost/config/compiler/cray.hpp \
-		/usr/local/include/boost/config/compiler/common_edg.hpp \
-		/usr/local/include/boost/config/compiler/comeau.hpp \
-		/usr/local/include/boost/config/compiler/pathscale.hpp \
-		/usr/local/include/boost/config/compiler/clang.hpp \
-		/usr/local/include/boost/config/compiler/intel.hpp \
-		/usr/local/include/boost/config/compiler/visualc.hpp \
-		/usr/local/include/boost/config/pragma_message.hpp \
-		/usr/local/include/boost/config/helper_macros.hpp \
-		/usr/local/include/boost/config/compiler/gcc.hpp \
-		/usr/local/include/boost/config/compiler/digitalmars.hpp \
-		/usr/local/include/boost/config/compiler/kai.hpp \
-		/usr/local/include/boost/config/compiler/sgi_mipspro.hpp \
-		/usr/local/include/boost/config/compiler/compaq_cxx.hpp \
-		/usr/local/include/boost/config/compiler/greenhills.hpp \
-		/usr/local/include/boost/config/compiler/codegear.hpp \
-		/usr/local/include/boost/config/compiler/borland.hpp \
-		/usr/local/include/boost/config/compiler/metrowerks.hpp \
-		/usr/local/include/boost/config/compiler/sunpro_cc.hpp \
-		/usr/local/include/boost/config/compiler/hp_acc.hpp \
-		/usr/local/include/boost/config/compiler/mpw.hpp \
-		/usr/local/include/boost/config/compiler/xlcpp_zos.hpp \
-		/usr/local/include/boost/config/compiler/xlcpp.hpp \
-		/usr/local/include/boost/config/compiler/vacpp.hpp \
-		/usr/local/include/boost/config/compiler/pgi.hpp \
-		/usr/local/include/boost/config/detail/select_stdlib_config.hpp \
-		/usr/local/include/boost/config/stdlib/stlport.hpp \
-		/usr/local/include/boost/config/stdlib/libcomo.hpp \
-		/usr/local/include/boost/config/no_tr1/utility.hpp \
-		/usr/local/include/boost/config/stdlib/roguewave.hpp \
-		/usr/local/include/boost/config/stdlib/libcpp.hpp \
-		/usr/local/include/boost/config/stdlib/libstdcpp3.hpp \
-		/usr/local/include/boost/config/stdlib/sgi.hpp \
-		/usr/local/include/boost/config/stdlib/msl.hpp \
-		/usr/local/include/boost/config/detail/posix_features.hpp \
-		/usr/local/include/boost/config/stdlib/xlcpp_zos.hpp \
-		/usr/local/include/boost/config/stdlib/vacpp.hpp \
-		/usr/local/include/boost/config/stdlib/modena.hpp \
-		/usr/local/include/boost/config/stdlib/dinkumware.hpp \
-		/usr/local/include/boost/config/detail/select_platform_config.hpp \
-		/usr/local/include/boost/config/platform/linux.hpp \
-		/usr/local/include/boost/config/platform/bsd.hpp \
-		/usr/local/include/boost/config/platform/solaris.hpp \
-		/usr/local/include/boost/config/platform/irix.hpp \
-		/usr/local/include/boost/config/platform/hpux.hpp \
-		/usr/local/include/boost/config/platform/cygwin.hpp \
-		/usr/local/include/boost/config/platform/win32.hpp \
-		/usr/local/include/boost/config/platform/beos.hpp \
-		/usr/local/include/boost/config/platform/macos.hpp \
-		/usr/local/include/boost/config/platform/zos.hpp \
-		/usr/local/include/boost/config/platform/aix.hpp \
-		/usr/local/include/boost/config/platform/amigaos.hpp \
-		/usr/local/include/boost/config/platform/qnxnto.hpp \
-		/usr/local/include/boost/config/platform/vxworks.hpp \
-		/usr/local/include/boost/config/platform/symbian.hpp \
-		/usr/local/include/boost/config/platform/cray.hpp \
-		/usr/local/include/boost/config/platform/vms.hpp \
-		/usr/local/include/boost/config/detail/suffix.hpp \
-		/usr/local/include/boost/detail/workaround.hpp \
-		/usr/local/include/boost/config/workaround.hpp \
-		/usr/local/include/boost/dynamic_bitset_fwd.hpp \
-		/usr/local/include/boost/detail/dynamic_bitset.hpp \
-		/usr/local/include/boost/detail/iterator.hpp \
-		/usr/local/include/boost/move/move.hpp \
-		/usr/local/include/boost/move/detail/config_begin.hpp \
-		/usr/local/include/boost/move/utility.hpp \
-		/usr/local/include/boost/move/detail/workaround.hpp \
-		/usr/local/include/boost/move/utility_core.hpp \
-		/usr/local/include/boost/move/core.hpp \
-		/usr/local/include/boost/move/detail/type_traits.hpp \
-		/usr/local/include/boost/move/detail/meta_utils.hpp \
-		/usr/local/include/boost/move/detail/meta_utils_core.hpp \
-		/usr/local/include/boost/move/detail/config_end.hpp \
-		/usr/local/include/boost/assert.hpp \
-		/usr/local/include/boost/current_function.hpp \
-		/usr/local/include/boost/static_assert.hpp \
-		/usr/local/include/boost/move/traits.hpp \
-		/usr/local/include/boost/move/iterator.hpp \
-		/usr/local/include/boost/move/detail/iterator_traits.hpp \
-		/usr/local/include/boost/move/detail/std_ns_begin.hpp \
-		/usr/local/include/boost/move/detail/std_ns_end.hpp \
-		/usr/local/include/boost/move/algorithm.hpp \
-		/usr/local/include/boost/move/algo/move.hpp \
-		/usr/local/include/boost/move/detail/iterator_to_raw_pointer.hpp \
-		/usr/local/include/boost/move/detail/to_raw_pointer.hpp \
-		/usr/local/include/boost/move/detail/pointer_element.hpp \
-		/usr/local/include/boost/detail/no_exceptions_support.hpp \
-		/usr/local/include/boost/core/no_exceptions_support.hpp \
-		/usr/local/include/boost/limits.hpp \
-		/usr/local/include/boost/pending/lowest_bit.hpp \
-		/usr/local/include/boost/integer/integer_log2.hpp \
-		/usr/local/include/boost/utility/addressof.hpp \
-		/usr/local/include/boost/core/addressof.hpp \
-		/usr/local/include/boost/throw_exception.hpp \
-		/usr/local/include/boost/exception/exception.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/dist.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/heap.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/allocator.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/random.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/kdtree_single_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/kmeans_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/logger.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/composite_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/linear_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/hierarchical_clustering_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/lsh_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/lsh_table.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/autotuned_index.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/ground_truth.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/index_testing.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/timer.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/flann/sampling.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/calib3d/calib3d.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/affine.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/objdetect/objdetect.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/legacy/compat.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/internal.hpp \
-		/usr/local/include/tbb/tbb_stddef.h \
-		/usr/local/include/tbb/tbb_config.h \
-		/usr/local/include/tbb/internal/_tbb_windef.h \
-		/usr/local/include/tbb/tbb.h \
-		/usr/local/include/tbb/aggregator.h \
-		/usr/local/include/tbb/atomic.h \
-		/usr/local/include/tbb/tbb_machine.h \
-		/usr/local/include/tbb/machine/gcc_generic.h \
-		/usr/local/include/tbb/machine/gcc_itsx.h \
-		/usr/local/include/tbb/machine/linux_intel64.h \
-		/usr/local/include/tbb/machine/gcc_ia32_common.h \
-		/usr/local/include/tbb/machine/linux_ia32.h \
-		/usr/local/include/tbb/machine/icc_generic.h \
-		/usr/local/include/tbb/machine/msvc_ia32_common.h \
-		/usr/local/include/tbb/machine/windows_ia32.h \
-		/usr/local/include/tbb/machine/windows_intel64.h \
-		/usr/local/include/tbb/machine/msvc_armv7.h \
-		/usr/local/include/tbb/machine/mic_common.h \
-		/usr/local/include/tbb/machine/linux_ia64.h \
-		/usr/local/include/tbb/machine/mac_ppc.h \
-		/usr/local/include/tbb/machine/gcc_armv7.h \
-		/usr/local/include/tbb/machine/linux_common.h \
-		/usr/local/include/tbb/machine/macos_common.h \
-		/usr/local/include/tbb/machine/ibm_aix51.h \
-		/usr/local/include/tbb/machine/sunos_sparc.h \
-		/usr/local/include/tbb/tbb_profiling.h \
-		/usr/local/include/tbb/internal/_tbb_strings.h \
-		/usr/local/include/tbb/aligned_space.h \
-		/usr/local/include/tbb/blocked_range.h \
-		/usr/local/include/tbb/blocked_range2d.h \
-		/usr/local/include/tbb/blocked_range3d.h \
-		/usr/local/include/tbb/cache_aligned_allocator.h \
-		/usr/local/include/tbb/combinable.h \
-		/usr/local/include/tbb/enumerable_thread_specific.h \
-		/usr/local/include/tbb/concurrent_vector.h \
-		/usr/local/include/tbb/tbb_exception.h \
-		/usr/local/include/tbb/tbb_allocator.h \
-		/usr/local/include/tbb/tbb_thread.h \
-		/usr/local/include/tbb/machine/windows_api.h \
-		/usr/local/include/tbb/internal/_tbb_hash_compare_impl.h \
-		/usr/local/include/tbb/tick_count.h \
-		/usr/local/include/tbb/internal/_template_helpers.h \
-		/usr/local/include/tbb/concurrent_hash_map.h \
-		/usr/local/include/tbb/spin_rw_mutex.h \
-		/usr/local/include/tbb/internal/_mutex_padding.h \
-		/usr/local/include/tbb/internal/_x86_rtm_rw_mutex_impl.h \
-		/usr/local/include/tbb/concurrent_lru_cache.h \
-		/usr/local/include/tbb/internal/_aggregator_impl.h \
-		/usr/local/include/tbb/concurrent_priority_queue.h \
-		/usr/local/include/tbb/concurrent_queue.h \
-		/usr/local/include/tbb/internal/_concurrent_queue_impl.h \
-		/usr/local/include/tbb/spin_mutex.h \
-		/usr/local/include/tbb/internal/_x86_eliding_mutex_impl.h \
-		/usr/local/include/tbb/concurrent_unordered_map.h \
-		/usr/local/include/tbb/internal/_concurrent_unordered_impl.h \
-		/usr/local/include/tbb/concurrent_unordered_set.h \
-		/usr/local/include/tbb/critical_section.h \
-		/usr/local/include/tbb/flow_graph.h \
-		/usr/local/include/tbb/null_mutex.h \
-		/usr/local/include/tbb/null_rw_mutex.h \
-		/usr/local/include/tbb/task.h \
-		/usr/local/include/tbb/task_arena.h \
-		/usr/local/include/tbb/compat/tuple \
-		/usr/local/include/tbb/internal/_flow_graph_impl.h \
-		/usr/local/include/tbb/flow_graph_abstractions.h \
-		/usr/local/include/tbb/internal/_flow_graph_trace_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_body_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_cache_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_types_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_async_msg_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_node_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_item_buffer_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_join_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_tagged_buffer_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_indexer_impl.h \
-		/usr/local/include/tbb/internal/_flow_graph_streaming_node.h \
-		/usr/local/include/tbb/global_control.h \
-		/usr/local/include/tbb/mutex.h \
-		/usr/local/include/tbb/parallel_do.h \
-		/usr/local/include/tbb/internal/_range_iterator.h \
-		/usr/local/include/tbb/parallel_for.h \
-		/usr/local/include/tbb/partitioner.h \
-		/usr/local/include/tbb/internal/_tbb_trace_impl.h \
-		/usr/local/include/tbb/parallel_for_each.h \
-		/usr/local/include/tbb/parallel_invoke.h \
-		/usr/local/include/tbb/parallel_reduce.h \
-		/usr/local/include/tbb/parallel_scan.h \
-		/usr/local/include/tbb/parallel_sort.h \
-		/usr/local/include/tbb/pipeline.h \
-		/usr/local/include/tbb/queuing_mutex.h \
-		/usr/local/include/tbb/queuing_rw_mutex.h \
-		/usr/local/include/tbb/reader_writer_lock.h \
-		/usr/local/include/tbb/recursive_mutex.h \
-		/usr/local/include/tbb/task_group.h \
-		/usr/local/include/tbb/task_scheduler_init.h \
-		/usr/local/include/tbb/task_scheduler_observer.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/eigen.hpp \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv/highgui.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/highgui/highgui_c.h \
-		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/highgui/highgui.hpp \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QDebug \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdebug.h \
-		labeledmap.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QPoint \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qpoint.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QMap \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qmap.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QMultiMap \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QRgb \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qrgb.h \
-		filterlineintegralconvolution.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QList \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qevent.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QColor \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qcolor.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QFile \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qfile.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPainter \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpainter.h \
-		unknownsindexer.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QHash \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qhash.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QStringList \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qstringlist.h \
-		periodjumpfield.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QPair \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qpair.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QVector \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qvector.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomDocument \
-		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/qdom.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomElement \
-		normalfield.h \
-		vec3doperations.h \
-		imageconverter.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QLinearGradient \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qbrush.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPen \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpen.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QFont \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
-		canvas.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
-		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h
+		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QList \
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QPoint \
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qpoint.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o glwidget.o glwidget.cpp
 
 crossfieldgraphic.o: crossfieldgraphic.cpp crossfieldgraphic.h \
@@ -5205,7 +4307,9 @@ imageconverter.o: imageconverter.cpp imageconverter.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QColor \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qcolor.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QRgb \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qrgb.h
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qrgb.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPainter \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpainter.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o imageconverter.o imageconverter.cpp
 
 filterlineintegralconvolution.o: filterlineintegralconvolution.cpp filterlineintegralconvolution.h \
@@ -6046,28 +5150,18 @@ harmoniccrossfield.o: harmoniccrossfield.cpp harmoniccrossfield.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/qdom.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomElement \
 		glwidget.h \
-		crossfieldgraphic.h \
-		normalfield.h \
-		vec3doperations.h \
-		imageconverter.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QLinearGradient \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qbrush.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPen \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpen.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QFont \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
-		canvas.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
 		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
 		eigen/Eigen/Eigen \
 		eigen/Eigen/Dense \
 		eigen/Eigen/Core \
@@ -6619,22 +5713,10 @@ bendfield.o: bendfield.cpp bendfield.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/qdom.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomElement \
 		glwidget.h \
-		crossfieldgraphic.h \
-		normalfield.h \
-		vec3doperations.h \
-		imageconverter.h \
+		canvas.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QLinearGradient \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qbrush.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPen \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpen.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QFont \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
-		canvas.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
 		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
@@ -7457,6 +6539,8 @@ workerthread.o: workerthread.cpp workerthread.h \
 		/usr/local/include/tbb/task_scheduler_init.h \
 		/usr/local/include/tbb/task_scheduler_observer.h \
 		/usr/local/Cellar/opencv@2/2.4.13.6/include/opencv2/core/eigen.hpp \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
 		crossfield.h \
 		tangentmap.h \
 		vec2doperations.h \
@@ -7495,22 +6579,285 @@ workerthread.o: workerthread.cpp workerthread.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomDocument \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/qdom.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtXml.framework/Headers/QDomElement \
-		crossfieldgraphic.h \
-		normalfield.h \
-		vec3doperations.h \
-		imageconverter.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QImage \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qimage.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QLinearGradient \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qbrush.h \
+		glwidget.h \
+		canvas.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPaintEvent \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QPen \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qpen.h \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QFont \
-		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/qfont.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QMouseEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtGui.framework/Headers/QWheelEvent \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/QWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtWidgets.framework/Headers/qwidget.h \
+		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/QGLWidget \
+		/usr/local/Cellar/qt/5.10.1/lib/QtOpenGL.framework/Headers/qgl.h \
+		imageconverter.h \
+		harmoniccrossfield.h \
 		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/QTime \
-		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h
+		/usr/local/Cellar/qt/5.10.1/lib/QtCore.framework/Headers/qdatetime.h \
+		eigen/Eigen/Eigen \
+		eigen/Eigen/Dense \
+		eigen/Eigen/Core \
+		eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
+		eigen/Eigen/src/Core/util/Macros.h \
+		eigen/Eigen/src/Core/util/MKL_support.h \
+		eigen/Eigen/src/Core/util/Constants.h \
+		eigen/Eigen/src/Core/util/ForwardDeclarations.h \
+		eigen/Eigen/src/Core/util/Meta.h \
+		eigen/Eigen/src/Core/util/StaticAssert.h \
+		eigen/Eigen/src/Core/util/XprHelper.h \
+		eigen/Eigen/src/Core/util/Memory.h \
+		eigen/Eigen/src/Core/NumTraits.h \
+		eigen/Eigen/src/Core/MathFunctions.h \
+		eigen/Eigen/src/Core/GenericPacketMath.h \
+		eigen/Eigen/src/Core/arch/SSE/PacketMath.h \
+		eigen/Eigen/src/Core/arch/SSE/MathFunctions.h \
+		eigen/Eigen/src/Core/arch/SSE/Complex.h \
+		eigen/Eigen/src/Core/arch/AltiVec/PacketMath.h \
+		eigen/Eigen/src/Core/arch/AltiVec/Complex.h \
+		eigen/Eigen/src/Core/arch/NEON/PacketMath.h \
+		eigen/Eigen/src/Core/arch/NEON/Complex.h \
+		eigen/Eigen/src/Core/arch/Default/Settings.h \
+		eigen/Eigen/src/Core/Functors.h \
+		eigen/Eigen/src/Core/DenseCoeffsBase.h \
+		eigen/Eigen/src/Core/DenseBase.h \
+		eigen/Eigen/src/plugins/BlockMethods.h \
+		eigen/Eigen/src/Core/MatrixBase.h \
+		eigen/Eigen/src/plugins/CommonCwiseUnaryOps.h \
+		eigen/Eigen/src/plugins/CommonCwiseBinaryOps.h \
+		eigen/Eigen/src/plugins/MatrixCwiseUnaryOps.h \
+		eigen/Eigen/src/plugins/MatrixCwiseBinaryOps.h \
+		eigen/Eigen/src/Core/EigenBase.h \
+		eigen/Eigen/src/Core/Assign.h \
+		eigen/Eigen/src/Core/util/BlasUtil.h \
+		eigen/Eigen/src/Core/DenseStorage.h \
+		eigen/Eigen/src/Core/NestByValue.h \
+		eigen/Eigen/src/Core/ForceAlignedAccess.h \
+		eigen/Eigen/src/Core/ReturnByValue.h \
+		eigen/Eigen/src/Core/NoAlias.h \
+		eigen/Eigen/src/Core/PlainObjectBase.h \
+		eigen/Eigen/src/Core/Matrix.h \
+		eigen/Eigen/src/Core/Array.h \
+		eigen/Eigen/src/Core/CwiseBinaryOp.h \
+		eigen/Eigen/src/Core/CwiseUnaryOp.h \
+		eigen/Eigen/src/Core/CwiseNullaryOp.h \
+		eigen/Eigen/src/Core/CwiseUnaryView.h \
+		eigen/Eigen/src/Core/SelfCwiseBinaryOp.h \
+		eigen/Eigen/src/Core/Dot.h \
+		eigen/Eigen/src/Core/StableNorm.h \
+		eigen/Eigen/src/Core/MapBase.h \
+		eigen/Eigen/src/Core/Stride.h \
+		eigen/Eigen/src/Core/Map.h \
+		eigen/Eigen/src/Core/Block.h \
+		eigen/Eigen/src/Core/VectorBlock.h \
+		eigen/Eigen/src/Core/Ref.h \
+		eigen/Eigen/src/Core/Transpose.h \
+		eigen/Eigen/src/Core/DiagonalMatrix.h \
+		eigen/Eigen/src/Core/Diagonal.h \
+		eigen/Eigen/src/Core/DiagonalProduct.h \
+		eigen/Eigen/src/Core/PermutationMatrix.h \
+		eigen/Eigen/src/Core/Transpositions.h \
+		eigen/Eigen/src/Core/Redux.h \
+		eigen/Eigen/src/Core/Visitor.h \
+		eigen/Eigen/src/Core/Fuzzy.h \
+		eigen/Eigen/src/Core/IO.h \
+		eigen/Eigen/src/Core/Swap.h \
+		eigen/Eigen/src/Core/CommaInitializer.h \
+		eigen/Eigen/src/Core/Flagged.h \
+		eigen/Eigen/src/Core/ProductBase.h \
+		eigen/Eigen/src/Core/GeneralProduct.h \
+		eigen/Eigen/src/Core/TriangularMatrix.h \
+		eigen/Eigen/src/Core/SelfAdjointView.h \
+		eigen/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+		eigen/Eigen/src/Core/products/Parallelizer.h \
+		eigen/Eigen/src/Core/products/CoeffBasedProduct.h \
+		eigen/Eigen/src/Core/products/GeneralMatrixVector.h \
+		eigen/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+		eigen/Eigen/src/Core/SolveTriangular.h \
+		eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+		eigen/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+		eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+		eigen/Eigen/src/Core/products/SelfadjointProduct.h \
+		eigen/Eigen/src/Core/products/SelfadjointRank2Update.h \
+		eigen/Eigen/src/Core/products/TriangularMatrixVector.h \
+		eigen/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+		eigen/Eigen/src/Core/products/TriangularSolverMatrix.h \
+		eigen/Eigen/src/Core/products/TriangularSolverVector.h \
+		eigen/Eigen/src/Core/BandMatrix.h \
+		eigen/Eigen/src/Core/CoreIterators.h \
+		eigen/Eigen/src/Core/BooleanRedux.h \
+		eigen/Eigen/src/Core/Select.h \
+		eigen/Eigen/src/Core/VectorwiseOp.h \
+		eigen/Eigen/src/Core/Random.h \
+		eigen/Eigen/src/Core/Replicate.h \
+		eigen/Eigen/src/Core/Reverse.h \
+		eigen/Eigen/src/Core/ArrayBase.h \
+		eigen/Eigen/src/plugins/ArrayCwiseUnaryOps.h \
+		eigen/Eigen/src/plugins/ArrayCwiseBinaryOps.h \
+		eigen/Eigen/src/Core/ArrayWrapper.h \
+		eigen/Eigen/src/Core/products/GeneralMatrixMatrix_MKL.h \
+		eigen/Eigen/src/Core/products/GeneralMatrixVector_MKL.h \
+		eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_MKL.h \
+		eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix_MKL.h \
+		eigen/Eigen/src/Core/products/SelfadjointMatrixVector_MKL.h \
+		eigen/Eigen/src/Core/products/TriangularMatrixMatrix_MKL.h \
+		eigen/Eigen/src/Core/products/TriangularMatrixVector_MKL.h \
+		eigen/Eigen/src/Core/products/TriangularSolverMatrix_MKL.h \
+		eigen/Eigen/src/Core/Assign_MKL.h \
+		eigen/Eigen/src/Core/GlobalFunctions.h \
+		eigen/Eigen/src/Core/util/ReenableStupidWarnings.h \
+		eigen/Eigen/Eigen2Support \
+		eigen/Eigen/src/Eigen2Support/Macros.h \
+		eigen/Eigen/src/Eigen2Support/Memory.h \
+		eigen/Eigen/src/Eigen2Support/Meta.h \
+		eigen/Eigen/src/Eigen2Support/Lazy.h \
+		eigen/Eigen/src/Eigen2Support/Cwise.h \
+		eigen/Eigen/src/Eigen2Support/CwiseOperators.h \
+		eigen/Eigen/src/Eigen2Support/TriangularSolver.h \
+		eigen/Eigen/src/Eigen2Support/Block.h \
+		eigen/Eigen/src/Eigen2Support/VectorBlock.h \
+		eigen/Eigen/src/Eigen2Support/Minor.h \
+		eigen/Eigen/src/Eigen2Support/MathFunctions.h \
+		eigen/Eigen/LU \
+		eigen/Eigen/src/misc/Solve.h \
+		eigen/Eigen/src/misc/Kernel.h \
+		eigen/Eigen/src/misc/Image.h \
+		eigen/Eigen/src/LU/FullPivLU.h \
+		eigen/Eigen/src/LU/PartialPivLU.h \
+		eigen/Eigen/src/LU/PartialPivLU_MKL.h \
+		eigen/Eigen/src/LU/Determinant.h \
+		eigen/Eigen/src/LU/Inverse.h \
+		eigen/Eigen/src/LU/arch/Inverse_SSE.h \
+		eigen/Eigen/src/Eigen2Support/LU.h \
+		eigen/Eigen/Cholesky \
+		eigen/Eigen/src/Cholesky/LLT.h \
+		eigen/Eigen/src/Cholesky/LDLT.h \
+		eigen/Eigen/src/Cholesky/LLT_MKL.h \
+		eigen/Eigen/QR \
+		eigen/Eigen/Jacobi \
+		eigen/Eigen/src/Jacobi/Jacobi.h \
+		eigen/Eigen/Householder \
+		eigen/Eigen/src/Householder/Householder.h \
+		eigen/Eigen/src/Householder/HouseholderSequence.h \
+		eigen/Eigen/src/Householder/BlockHouseholder.h \
+		eigen/Eigen/src/QR/HouseholderQR.h \
+		eigen/Eigen/src/QR/FullPivHouseholderQR.h \
+		eigen/Eigen/src/QR/ColPivHouseholderQR.h \
+		eigen/Eigen/src/QR/HouseholderQR_MKL.h \
+		eigen/Eigen/src/QR/ColPivHouseholderQR_MKL.h \
+		eigen/Eigen/src/Eigen2Support/QR.h \
+		eigen/Eigen/Eigenvalues \
+		eigen/Eigen/Geometry \
+		eigen/Eigen/SVD \
+		eigen/Eigen/src/SVD/JacobiSVD.h \
+		eigen/Eigen/src/SVD/JacobiSVD_MKL.h \
+		eigen/Eigen/src/SVD/UpperBidiagonalization.h \
+		eigen/Eigen/src/Eigen2Support/SVD.h \
+		eigen/Eigen/src/Geometry/OrthoMethods.h \
+		eigen/Eigen/src/Geometry/EulerAngles.h \
+		eigen/Eigen/src/Geometry/Homogeneous.h \
+		eigen/Eigen/src/Geometry/RotationBase.h \
+		eigen/Eigen/src/Geometry/Rotation2D.h \
+		eigen/Eigen/src/Geometry/Quaternion.h \
+		eigen/Eigen/src/Geometry/AngleAxis.h \
+		eigen/Eigen/src/Geometry/Transform.h \
+		eigen/Eigen/src/Geometry/Translation.h \
+		eigen/Eigen/src/Geometry/Scaling.h \
+		eigen/Eigen/src/Geometry/Hyperplane.h \
+		eigen/Eigen/src/Geometry/ParametrizedLine.h \
+		eigen/Eigen/src/Geometry/AlignedBox.h \
+		eigen/Eigen/src/Geometry/Umeyama.h \
+		eigen/Eigen/src/Geometry/arch/Geometry_SSE.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/All.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/RotationBase.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/Rotation2D.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/Quaternion.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/AngleAxis.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/Transform.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/Translation.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/Scaling.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/AlignedBox.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/Hyperplane.h \
+		eigen/Eigen/src/Eigen2Support/Geometry/ParametrizedLine.h \
+		eigen/Eigen/src/Eigenvalues/Tridiagonalization.h \
+		eigen/Eigen/src/Eigenvalues/RealSchur.h \
+		eigen/Eigen/src/Eigenvalues/HessenbergDecomposition.h \
+		eigen/Eigen/src/Eigenvalues/EigenSolver.h \
+		eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h \
+		eigen/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h \
+		eigen/Eigen/src/Eigenvalues/ComplexSchur.h \
+		eigen/Eigen/src/Eigenvalues/ComplexEigenSolver.h \
+		eigen/Eigen/src/Eigenvalues/RealQZ.h \
+		eigen/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
+		eigen/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+		eigen/Eigen/src/Eigenvalues/RealSchur_MKL.h \
+		eigen/Eigen/src/Eigenvalues/ComplexSchur_MKL.h \
+		eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_MKL.h \
+		eigen/Eigen/Sparse \
+		eigen/Eigen/SparseCore \
+		eigen/Eigen/src/SparseCore/SparseUtil.h \
+		eigen/Eigen/src/SparseCore/SparseMatrixBase.h \
+		eigen/Eigen/src/SparseCore/CompressedStorage.h \
+		eigen/Eigen/src/SparseCore/AmbiVector.h \
+		eigen/Eigen/src/SparseCore/SparseMatrix.h \
+		eigen/Eigen/src/SparseCore/MappedSparseMatrix.h \
+		eigen/Eigen/src/SparseCore/SparseVector.h \
+		eigen/Eigen/src/SparseCore/SparseBlock.h \
+		eigen/Eigen/src/SparseCore/SparseTranspose.h \
+		eigen/Eigen/src/SparseCore/SparseCwiseUnaryOp.h \
+		eigen/Eigen/src/SparseCore/SparseCwiseBinaryOp.h \
+		eigen/Eigen/src/SparseCore/SparseDot.h \
+		eigen/Eigen/src/SparseCore/SparsePermutation.h \
+		eigen/Eigen/src/SparseCore/SparseRedux.h \
+		eigen/Eigen/src/SparseCore/SparseFuzzy.h \
+		eigen/Eigen/src/SparseCore/ConservativeSparseSparseProduct.h \
+		eigen/Eigen/src/SparseCore/SparseSparseProductWithPruning.h \
+		eigen/Eigen/src/SparseCore/SparseProduct.h \
+		eigen/Eigen/src/SparseCore/SparseDenseProduct.h \
+		eigen/Eigen/src/SparseCore/SparseDiagonalProduct.h \
+		eigen/Eigen/src/SparseCore/SparseTriangularView.h \
+		eigen/Eigen/src/SparseCore/SparseSelfAdjointView.h \
+		eigen/Eigen/src/SparseCore/TriangularSolver.h \
+		eigen/Eigen/src/SparseCore/SparseView.h \
+		eigen/Eigen/OrderingMethods \
+		eigen/Eigen/src/OrderingMethods/Amd.h \
+		eigen/Eigen/src/Core/util/NonMPL2.h \
+		eigen/Eigen/src/OrderingMethods/Ordering.h \
+		eigen/Eigen/src/OrderingMethods/Eigen_Colamd.h \
+		eigen/Eigen/SparseCholesky \
+		eigen/Eigen/src/misc/SparseSolve.h \
+		eigen/Eigen/src/SparseCholesky/SimplicialCholesky.h \
+		eigen/Eigen/src/SparseCholesky/SimplicialCholesky_impl.h \
+		eigen/Eigen/SparseLU \
+		eigen/Eigen/src/SparseLU/SparseLU_gemm_kernel.h \
+		eigen/Eigen/src/SparseLU/SparseLU_Structs.h \
+		eigen/Eigen/src/SparseLU/SparseLU_SupernodalMatrix.h \
+		eigen/Eigen/src/SparseLU/SparseLUImpl.h \
+		eigen/Eigen/src/SparseCore/SparseColEtree.h \
+		eigen/Eigen/src/SparseLU/SparseLU_Memory.h \
+		eigen/Eigen/src/SparseLU/SparseLU_heap_relax_snode.h \
+		eigen/Eigen/src/SparseLU/SparseLU_relax_snode.h \
+		eigen/Eigen/src/SparseLU/SparseLU_pivotL.h \
+		eigen/Eigen/src/SparseLU/SparseLU_panel_dfs.h \
+		eigen/Eigen/src/SparseLU/SparseLU_kernel_bmod.h \
+		eigen/Eigen/src/SparseLU/SparseLU_panel_bmod.h \
+		eigen/Eigen/src/SparseLU/SparseLU_column_dfs.h \
+		eigen/Eigen/src/SparseLU/SparseLU_column_bmod.h \
+		eigen/Eigen/src/SparseLU/SparseLU_copy_to_ucol.h \
+		eigen/Eigen/src/SparseLU/SparseLU_pruneL.h \
+		eigen/Eigen/src/SparseLU/SparseLU_Utils.h \
+		eigen/Eigen/src/SparseLU/SparseLU.h \
+		eigen/Eigen/SparseQR \
+		eigen/Eigen/src/SparseQR/SparseQR.h \
+		eigen/Eigen/IterativeLinearSolvers \
+		eigen/Eigen/src/IterativeLinearSolvers/IterativeSolverBase.h \
+		eigen/Eigen/src/IterativeLinearSolvers/BasicPreconditioners.h \
+		eigen/Eigen/src/IterativeLinearSolvers/ConjugateGradient.h \
+		eigen/Eigen/src/IterativeLinearSolvers/BiCGSTAB.h \
+		eigen/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h \
+		bendfield.h \
+		distancetransform.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o workerthread.o workerthread.cpp
+
+crossfield3d.o: crossfield3d.cpp crossfield3d.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o crossfield3d.o crossfield3d.cpp
 
 qrc_resources.o: qrc_resources.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_resources.o qrc_resources.cpp

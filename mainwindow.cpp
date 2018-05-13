@@ -118,6 +118,13 @@ void MainWindow::exportShading() {
     msgBox.setText("This hasn't been implemented yet!\nBut we're using it to create a crossfield!"); // TODO
     msgBox.exec();
 
+    QString filename = "/Users/ezradavis/Desktop/Ezra's_Folder/school/Yale/Advanced Graphics Sketching/final project/BendFields_OSX/Sketches/bracelet_l1";
+    this->ui->glwidget->getCanvas(GLWidget::CONSTRAINT_CANVAS).setImage(ImageConverter::loadImage(filename + "_constraints.png"));
+    this->ui->glwidget->getCanvas(GLWidget::CURVATURE_CANVAS).setImage(ImageConverter::loadImage(filename + "_curvature.png"));
+    this->ui->glwidget->getCanvas(GLWidget::MASK_CANVAS).setImage(ImageConverter::loadImage(filename + "_mask.png"));
+
+    this->ui->glwidget->repaint();
+
     WorkerThread w;
     w.makeCrossField(
                 this->ui->glwidget->getCanvas(GLWidget::CONSTRAINT_CANVAS).getImage(),

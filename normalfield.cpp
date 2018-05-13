@@ -2,22 +2,21 @@
 
 NormalField::NormalField()
 {
-    this->crossfield = NULL;
+    Q_ASSERT(0=="Never call the default constructor - bad things may happen on destruction");
 }
 
-NormalField::NormalField(CrossField *crossfield)
+NormalField::NormalField(CrossField3D *crossfield)
 {
-    this->crossfield = crossfield;
     Q_ASSERT(crossfield != NULL);
+    this->w = crossfield->width();
+    this->h = crossfield->height();
+
     this->normals = new Vec3d[this->width() * this->height()];
     for(int i=0; i < this->height(); i++) {
         for(int j=0; j < this->width(); j++) {
-            Vec2d v_0 = crossfield->getV0(i,j);
-            Vec2d v_1 = crossfield->getV0(i,j);
-
-            Vec3d v3_0, v3_1;
-            NormalField::cross2dTo3d(v_0, v_1, &v3_0, &v3_1);
-            this->normals[this->index(i,j)] = NormalField::crossToNormal(v3_0, v3_1);
+            Vec3d v_0 = crossfield->getV0(i,j);
+            Vec3d v_1 = crossfield->getV1(i,j);
+            this->normals[this->index(i,j)] = NormalField::crossToNormal(v_0, v_1);
         }
     }
 }
@@ -27,20 +26,7 @@ NormalField::~NormalField() {
 }
 
 int NormalField::index(int x, int y) {
-    Q_ASSERT(crossfield != NULL);
-    return this->crossfield->width() * y + x;
-}
-
-void NormalField::cross2dTo3d(Vec2d v_0, Vec2d v_1, Vec3d *v_0_3, Vec3d *v_1_3)
-{
-
-    // TODO This should be represented by its own (complicated) class that performs optimization as described in the paper.
-    double dot = Vec2dOperations::dotProduct(v_0, v_1);
-    double z = sqrt(abs(dot));
-    *v_0_3 = Vec3dOperations::getNormalized(Vec3d(v_0(0), v_0(1), z));
-    *v_1_3 = Vec3dOperations::getNormalized(Vec3d(v_0(0), v_0(1), dot <= 0 ? z : -z));
-
-
+    return this->width() * y + x;
 }
 
 Vec3d NormalField::crossToNormal(Vec3d v_0, Vec3d v_1)
@@ -54,5 +40,17 @@ Vec3d NormalField::crossToNormal(Vec3d v_0, Vec3d v_1)
 
 QColor NormalField::getColor(int x, int y) {
     Vec3d n = this->normals[this->index(x,y)];
-    return QColor((int)255*(n(0)+1)/2, (int)255*(n(0)+1)/2, (int)255*(n(0)+1)/2);
+    return QColor((int)255*(n(0)+1)/2, (int)255*(n(1)+1)/2, (int)255*(n(2)+1)/2, 255);
+}
+
+QImage NormalField::toImage() {
+    QImage img = QImage(this->height(), this->width(), QImage::Format_ARGB32);
+    for(int i=0; i < img.height(); i++) {
+        for(int j=0; j < img.width(); j++) {
+            QColor color = this->getColor(i,j);
+
+            img.setPixelColor(j,i,color); // Apparently somewhat slow...
+        }
+    }
+    return img;
 }
