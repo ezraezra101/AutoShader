@@ -167,7 +167,7 @@ public:
     HarmonicCrossField(CrossField * ,PeriodJumpField *, UnknownsIndexer *, Mat);
 
     // Iterative stitching method for solving the field
-    void smoothWithIterativeGreedy(GLWidget * glwidget);
+    void smoothWithIterativeGreedy();
 
 
 

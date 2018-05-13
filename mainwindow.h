@@ -40,13 +40,8 @@ knowledge of the CeCILL license and that you accept its terms.
 #define MAINWINDOW_H
 
 // Includes from the project
-#include "crossfieldgraphic.h"
-#include "crossfield.h"
-#include "harmoniccrossfield.h"
-#include "bendfield.h"
-#include "periodjumpfield.h"
-#include "distancetransform.h"
-#include "unknownsindexer.h"
+#include "workerthread.h"
+#include "glwidget.h"
 
 // External libraries / headers (Solvers, IO, Debugging)
 #include <QMainWindow>
@@ -93,34 +88,16 @@ private:
 
     // Methods
     void connects();
-    void inits();
 
     void loadImageButton(GLWidget::CanvasEnum c);
 
     // Graphics
     Ui::MainWindow *ui;
-    CrossFieldGraphic crossfieldGraphic;
 
     // Images
     Mat mask;
     Mat sketch;
     Mat maskCorners;
-
-    // CrossFields
-    CrossField * crossfield;
-
-    // Tangents
-    TangentMap * tangents;
-
-    // Period-jump field
-    PeriodJumpField * pjumpfield;
-
-    // Unknowns indexers
-    UnknownsIndexer * index_harmonic;
-    UnknownsIndexer * index_covariant;
-
-    // Computed topology
-    bool computedTopology;
 
     // Open File name
     QString openFileName;

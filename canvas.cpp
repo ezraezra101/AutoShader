@@ -32,6 +32,11 @@ bool Canvas::setImage(const QImage &im, bool matchSize) {
     return true;
 }
 
+QImage Canvas::getImage() {
+    return image;
+}
+
+
 void Canvas::mouseEvent(QMouseEvent *event, QWidget *parent) {
     // event->type() == QEvent::MouseMove or the like
     QPainter::CompositionMode q; // Composition mode

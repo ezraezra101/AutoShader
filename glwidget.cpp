@@ -42,19 +42,19 @@ GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
     this->mode = CONSTRAINT_CANVAS;
+    this->isShowingCrossFields = false;
 
     int x = 600, y = 400;
-    constraintStrokes = Canvas(); constraintStrokes.init(x,y);
-    curvatureStrokes = Canvas(); curvatureStrokes.init(x,y);
-    shading = Canvas(); shading.init(x,y);
-    mask = Canvas(); mask.init(x,y);
+    constraintCanvas = Canvas(); constraintCanvas.init(x,y);
+    curvatureCanvas = Canvas(); curvatureCanvas.init(x,y);
+    shadingCanvas = Canvas(); shadingCanvas.init(x,y);
+    maskCanvas = Canvas(); maskCanvas.init(x,y);
+    concavityCanvas = Canvas(); concavityCanvas.init(x,y);
+    crossfieldCanvas = Canvas(); crossfieldCanvas.init(x,y);
+    normalsCanvas = Canvas(); normalsCanvas.init(x,y);
+    shadingCanvas = Canvas(); shadingCanvas.init(x,y);
 
     activeCanvas().updateCursor(this);
-}
-
-void GLWidget::setCrossFieldGraphic(CrossFieldGraphic * cfg)
-{
-    //crossfieldgraphic = cfg; // TODO reimplement
 }
 
 void GLWidget::initializeGL()
@@ -95,61 +95,32 @@ void GLWidget::paintEvent(QPaintEvent *event)
     QPainter painter;
     painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    /*
 
-    if(mode==CROSSMODE)
-    {
-        crossfieldgraphic->paintCrosses(&painter, event);
-    }
-    else if(mode==HATCHMODE)
-    {
-        crossfieldgraphic->paint(&painter, event);
 
+    curvatureCanvas.draw(&painter, event, this);
+    maskCanvas.draw(&painter, event, this);
+    shadingCanvas.draw(&painter, event, this);
+    constraintCanvas.draw(&painter, event, this);
+
+    if(this->isShowingCrossFields) {
+        crossfieldCanvas.draw(&painter, event, this);
     }
-    else if(mode==CONSTRAINTMODE)
-    {
-        crossfieldgraphic->paintConstraints(&painter, event);
-    } else if(mode==NORMALMODE)
-    {
-        crossfieldgraphic->paintNormals(&painter, event);
-    }
-*/
-    curvatureStrokes.draw(&painter, event, this);
-    mask.draw(&painter, event, this);
-    shading.draw(&painter, event, this);
-    constraintStrokes.draw(&painter, event, this);
+
     painter.end();
 }
 
-void GLWidget::mousePressEvent(QMouseEvent *event)
-{
-//    if(event->button()==Qt::LeftButton)
-//    {
-//        registering = true;
-//    }
+void GLWidget::mousePressEvent(QMouseEvent *event) {
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     activeCanvas().mouseEvent(event, this);
-//    if(registering)
-//    {
-//        this->crossfieldgraphic->removeConstraints(event->pos(),this->rect(), this->strokeSize);
-//        this->repaint();
-//    }
-
 }
 
-void GLWidget::mouseReleaseEvent(QMouseEvent *event)
-{
-//    if(event->button()==Qt::LeftButton)
-//    {
-//        registering = false;
-//    }
+void GLWidget::mouseReleaseEvent(QMouseEvent *event) {
 }
 
-void GLWidget::wheelEvent(QWheelEvent* event)
-{
+void GLWidget::wheelEvent(QWheelEvent* event) {
     activeCanvas().mouseWheelEvent(event, this);
 }
 
@@ -165,12 +136,25 @@ Canvas &GLWidget::activeCanvas() {
 Canvas &GLWidget::getCanvas(CanvasEnum c) {
     switch(c) {
     case CONSTRAINT_CANVAS:
-        return constraintStrokes;
+        return constraintCanvas;
     case CURVATURE_CANVAS:
-        return curvatureStrokes;
+        return curvatureCanvas;
     case MASK_CANVAS:
-        return mask;
+        return maskCanvas;
+    case CONCAVITY_CANVAS:
+        return concavityCanvas;
+    case CROSSFIELD_CANVAS:
+        return crossfieldCanvas;
+    case NORMALS_CANVAS:
+        return normalsCanvas;
+    case SHADING_CANVAS:
+        return shadingCanvas;
     default:
-        return constraintStrokes;
+        return constraintCanvas;
     }
+}
+
+void GLWidget::showCrossFields(bool b) {
+    this->isShowingCrossFields = b;
+    this->repaint();
 }

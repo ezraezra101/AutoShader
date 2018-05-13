@@ -40,7 +40,6 @@ knowledge of the CeCILL license and that you accept its terms.
 #define GLWIDGET_H
 
 // Includes from the project
-#include "crossfieldgraphic.h"
 #include "canvas.h"
 
 // External libraries / headers (Solvers, IO, Debugging)
@@ -62,7 +61,6 @@ public:
         CONSTRAINT_CANVAS,
         CURVATURE_CANVAS,
         MASK_CANVAS,
-// Currently not useful:
         CONCAVITY_CANVAS,
         CROSSFIELD_CANVAS,
         NORMALS_CANVAS,
@@ -70,13 +68,14 @@ public:
     };
 
     explicit GLWidget(QWidget *parent = 0);
-    void setCrossFieldGraphic(CrossFieldGraphic * cfg);
 
     void updateView();
 
 
     void setActiveCanvas(CanvasEnum c);
     Canvas &getCanvas(CanvasEnum c);
+
+    void showCrossFields(bool);
 
 protected:
 
@@ -93,11 +92,16 @@ protected:
 private:
     Canvas &activeCanvas();
 
-    Canvas constraintStrokes;
-    Canvas curvatureStrokes;
-    Canvas mask;
-    Canvas shading;
+    Canvas constraintCanvas;
+    Canvas curvatureCanvas;
+    Canvas maskCanvas;
+    Canvas concavityCanvas;
+    Canvas crossfieldCanvas;
+    Canvas normalsCanvas;
+    Canvas shadingCanvas;
     CanvasEnum mode;
+
+    bool isShowingCrossFields;
 };
 
 

@@ -40,7 +40,9 @@ knowledge of the CeCILL license and that you accept its terms.
 
 #define  THRESHOLDSTROKE 0.95
 
-CrossField::CrossField() {}
+CrossField::CrossField() {
+    Q_ASSERT(0=="Never call the default constructor - bad things may happen on destruction");
+}
 
 CrossField::~CrossField()
 {
@@ -57,7 +59,6 @@ CrossField::~CrossField()
         delete boundaries[i];
         delete constrainedLines[i];
     }
-
     delete field;
     delete alpha;
     delete beta;

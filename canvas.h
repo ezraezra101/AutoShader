@@ -21,6 +21,7 @@ public:
 
     void init(int width, int height);
     bool setImage(const QImage &im, bool matchSize = false);
+    QImage getImage();
 
     void mouseEvent(QMouseEvent *m, QWidget *parent);
     void mouseWheelEvent(QWheelEvent *w, QWidget *parent);

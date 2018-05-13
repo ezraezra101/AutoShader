@@ -551,7 +551,7 @@ void HarmonicCrossField::insertInOrder_integer(QList<int> & list, int i)
 }
 
 // Iterative stitching method for solving the field
-void HarmonicCrossField::smoothWithIterativeGreedy(GLWidget * glwidget)
+void HarmonicCrossField::smoothWithIterativeGreedy()
 {
     QTime totalTime;
     totalTime.start();
@@ -856,7 +856,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy(GLWidget * glwidget)
 
     // Plot on the interface
     // DEBUGGING
-    glwidget->repaint();
+    //glwidget->repaint();
 
     // Print stats
     if(gaussCounter != 0)

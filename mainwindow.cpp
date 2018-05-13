@@ -60,10 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     // Set crossfieldgraphic to the glwidget
-    this->ui->glwidget->setCrossFieldGraphic(&this->crossfieldGraphic);
-
-    // Inits
-    this->inits();
+    //this->ui->glwidget->setCrossFieldGraphic(&this->crossfieldGraphic);
 
     // Connect signals
     this->connects();
@@ -72,16 +69,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::inits()
-{
-    this->crossfield = NULL;
-    this->pjumpfield = NULL;
-    this->tangents = NULL;
-    this->index_harmonic = NULL;
-    this->index_covariant = NULL;
-    this->computedTopology = false;
 }
 
 void MainWindow::connects()
@@ -97,7 +84,7 @@ void MainWindow::connects()
     connect(this->ui->draw_convexity, SIGNAL(clicked()), this, SLOT(drawConvexity()));
 
     connect(this->ui->export_shading, SIGNAL(clicked()), this, SLOT(exportShading()));
-    connect(this->ui->show_cross_fields, SIGNAL(clicked()), this, SLOT(showCrossFields()));
+    connect(this->ui->show_cross_fields, SIGNAL(stateChanged()), this, SLOT(showCrossFields()));
 }
 
 void MainWindow::loadConstraints() {
@@ -128,13 +115,21 @@ void MainWindow::drawConvexity() {
 
 void MainWindow::exportShading() {
     QMessageBox msgBox;
-    msgBox.setText("This hasn't been implemented yet!"); // TODO
+    msgBox.setText("This hasn't been implemented yet!\nBut we're using it to create a crossfield!"); // TODO
     msgBox.exec();
+
+    WorkerThread w;
+    w.makeCrossField(
+                this->ui->glwidget->getCanvas(GLWidget::CONSTRAINT_CANVAS).getImage(),
+                this->ui->glwidget->getCanvas(GLWidget::CURVATURE_CANVAS).getImage(),
+                this->ui->glwidget->getCanvas(GLWidget::MASK_CANVAS).getImage(),
+                // Strip this out later:
+                this->ui->glwidget
+                );
 }
+
 void MainWindow::showCrossFields() {
-    QMessageBox msgBox;
-    msgBox.setText("This hasn't been implemented yet!"); // TODO
-    msgBox.exec();
+    this->ui->glwidget->showCrossFields(this->ui->show_cross_fields->isChecked());
 }
 
 void MainWindow::about()
@@ -177,225 +172,7 @@ void MainWindow::loadImageButton(GLWidget::CanvasEnum c) {
             msgBox.setText("Image sizes must match the original drawing constraints image.");
             msgBox.exec();
         }
-
+        this->ui->glwidget->setActiveCanvas(c);
         this->ui->glwidget->repaint();
     }
 }
-
-
-/*
-
-void MainWindow::changeResolution(int s)
-{
-    this->crossfieldGraphic.setStep(s);
-    this->ui->glwidget->repaint();
-}
-void MainWindow::saveCrossField()
-{
-    if(this->crossfield!=NULL)
-    {
-        // Save File Dialog
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),"../crossFields/untitled",tr("CrossFields (*.xml)"));
-
-        QString name_crossfield = fileName + "_crossfield.xml";
-
-        QString name_pjumpfield = fileName + "_pjumpfield.xml";
-
-        // Save XML files
-        this->crossfield->saveToXML(name_crossfield);
-        this->pjumpfield->saveToXML(name_pjumpfield);
-    }
-}
-
-// Loads a prerecorded crossfield
-void MainWindow::loadFromFileButtonClicked()
-{
-    // Open File Dialog
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),"../crossFields/",tr("CrossFields (*.xml)"));
-    QString name_crossfield = fileName;
-    QString name_pjumpfield = fileName.remove(fileName.lastIndexOf("_"),fileName.size()-fileName.lastIndexOf("_")) + "_pjumpfield.xml";
-
-    if(!fileName.isEmpty())
-    {
-        // Update cursor
-        //this->ui->glwidget->updateCursorConstraint();
-
-        // Create crossfield
-        this->crossfield = new CrossField();
-        this->pjumpfield = new PeriodJumpField();
-
-        // Load into crossfield
-        crossfield->loadFromXML(name_crossfield);
-        pjumpfield->loadFromXML(name_pjumpfield);
-
-        // Link it with it's graphic representation
-        this->crossfieldGraphic.setCrossField(this->crossfield);
-
-        // Open File Dialog
-        QString sketchFileName = QFileDialog::getOpenFileName(this, tr("Open File"),"../sketches/",tr("Sketch (*.png)"));
-
-        // Load sketch
-        this->sketch = imread(sketchFileName.toStdString());
-
-        // Load Mask
-        QString maskFileName = sketchFileName.remove(sketchFileName.lastIndexOf("."),sketchFileName.size()-sketchFileName.lastIndexOf(".")) + "_mask.png";
-
-        // Load sketch
-        this->mask = imread(maskFileName.toStdString());        
-
-        // Set them to the graphic representation of the crossfield
-        this->crossfieldGraphic.setSketch(this->sketch);
-        this->crossfieldGraphic.setMask(this->mask);
-
-        // Refresh
-        this->activeCrossesMode();
-
-        // Resize the view
-        this->ui->glwidget->updateView();
-
-    }
-}
-
-// Process files
-void MainWindow::loadImageButtonClicked()
-{
-    // Open File Dialog
-    QString sketchFileName = QFileDialog::getOpenFileName(this, tr("Open File"),"../sketches/",tr("Sketch (*.png)"));
-
-    if(!sketchFileName.isEmpty())
-    {
-        // Update cursor
-        //this->ui->glwidget->updateCursorConstraint();
-
-        // File Names
-        QString fileMask = sketchFileName;
-        QString maskFileName = fileMask.remove(fileMask.lastIndexOf("."),fileMask.size()-fileMask.lastIndexOf(".")) + "_mask.png";
-
-        // Keep the image name
-        openFileName = fileMask.remove(0,fileMask.lastIndexOf("/")+1);
-
-        // Read them, genereta tangents
-        this->sketch = imread(sketchFileName.toStdString());
-        this->tangents = new TangentMap(sketch);
-        this->mask = imread(maskFileName.toStdString());
-
-        // Get no corners image
-        this->maskCorners = tangents->getNocorners();
-
-        // Set them to the graphic representation of the crossfield
-        this->crossfieldGraphic.setSketch(this->sketch);
-        this->crossfieldGraphic.setMask(this->mask);
-        this->crossfieldGraphic.setCornersMask(this->maskCorners);
-
-        // Create and initialice crossfield
-        this->crossfield = new CrossField(this->sketch.rows,this->sketch.cols);
-        this->crossfield->initialiceThita(tangents);
-        this->crossfield->setConstraintsMap(maskCorners,sketch);
-
-        // Link it with it's graphic representation
-        this->crossfieldGraphic.setCrossField(this->crossfield);
-
-        // Resize the view
-        this->ui->glwidget->updateView();
-
-        this->activeConstraintMode();
-    }
-}
-
-// Process files
-void MainWindow::processImageButtonClicked()
-{
-    if(this->crossfield!= NULL)
-    {        
-        // Update cursor
-        this->ui->glwidget->updateCursorWait();
-
-        this->crossfield->updateConstraintsWithUserInput();
-
-        // Distance Transform
-        DistanceTransform dt;
-        LabeledMap * labeledMap = dt.filterDiscontinuity(maskCorners,crossfield);
-        labeledMap->generateInverseMap();
-
-        this->crossfield->initialice(labeledMap,this->sketch,tangents);
-
-        // Index uknowns
-        this->index_harmonic = new UnknownsIndexer(this->mask,2,this->crossfield);
-
-        // Create Period-jump field
-        this->pjumpfield = new PeriodJumpField(this->sketch.rows,this->sketch.cols);
-        pjumpfield->initialice(labeledMap, this->mask, index_harmonic);
-
-        this->activeCrossesMode();
-
-        // Find topology - Harmonic Smoothing
-        HarmonicCrossField smootherStitching(this->crossfield,this->pjumpfield, index_harmonic, this->mask);
-        smootherStitching.smoothWithIterativeGreedy(this->ui->glwidget);
-
-        this->computedTopology = true;
-
-        // Rotate crosses
-        this->crossfield->rotateCrosses(pjumpfield, this->mask, index_harmonic);
-        this->crossfield->checkPositiveAngles(index_harmonic);
-
-        // Update cursor
-        this->ui->glwidget->updateCursorArrow();
-    }
-}
-
-// Process files
-void MainWindow::covariantProcessImageButtonClicked()
-{
-    if(this->crossfield!= NULL)
-    {
-        // Update cursor
-        this->ui->glwidget->updateCursorWait();
-
-        if(!this->computedTopology)
-        {
-
-            this->crossfield->updateConstraintsWithUserInput();
-
-            // Distance Transform
-            DistanceTransform dt;
-            LabeledMap * labeledMap = dt.filterDiscontinuity(maskCorners,crossfield);
-
-            labeledMap->generateInverseMap();
-
-            this->crossfield->initialice(labeledMap,this->sketch,tangents);
-
-            this->activeCrossesMode();
-
-            // Index uknowns
-            this->index_harmonic = new UnknownsIndexer(this->mask,2,this->crossfield);
-
-            // Create Period-jump field
-            this->pjumpfield = new PeriodJumpField(this->sketch.rows,this->sketch.cols);
-            pjumpfield->initialice(labeledMap, this->mask, index_harmonic);
-
-            // Find topology - Harmonic Smoothing
-            HarmonicCrossField smootherStitching(this->crossfield,this->pjumpfield,index_harmonic,this->mask);
-            smootherStitching.smoothWithIterativeGreedy(this->ui->glwidget);
-
-            this->computedTopology = true;
-        }
-
-        this->activeCrossesMode();
-
-        // Index uknowns
-        this->index_covariant = new UnknownsIndexer(this->mask,4,this->crossfield);
-
-        // Covariant Smoothing
-        BendField smootherCovariant(this->crossfield,this->pjumpfield, index_covariant, this->mask);
-        smootherCovariant.smoothBendField(this->ui->glwidget);
-
-        this->crossfield->rotateCrosses(pjumpfield,this->mask, index_covariant);
-        this->crossfield->checkPositiveAngles(index_covariant);
-
-        this->ui->glwidget->repaint();        
-
-        // Update cursor
-        this->ui->glwidget->updateCursorArrow();
-    }
-}
-*/
