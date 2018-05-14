@@ -79,6 +79,9 @@ BendField::BendField(CrossField * c,PeriodJumpField * p, UnknownsIndexer * idx)
     // Number of unknowns and pixels
     this->numerOfEntries = idx->getNumberOfPixels();
     this->sizeX = idx->getNumberOfUknowns();
+
+
+    this->iteration = 0;
 }
 
 // Computes the residual of the system as a measure of convergence
@@ -478,112 +481,97 @@ void BendField::buildCovariant(SpMat &A, VectorXd& b, int sizeX)
     delete tripletList;
 }
 
+bool BendField::isDone() const {
+    return this->iteration >= 10; // Empirical test: 10 iteration is more than what's really needed
+}
+
 // Iterative method for solving the BendField
-void BendField::smoothBendField(int iterations)
+void BendField::smoothBendField()
 {
-    // The matrix for solver
-    SpMat A;
-    SpMat A_transpose;
-    SpMat A_final;
-
-    VectorXd b;
-    VectorXd b_final;
-
-    VectorXd x;
-
-    // Inits
-    b.resize(sizeX);
-    b_final.resize(sizeX);
-    x.resize(sizeX);
-
-    // Iterative algorithm to solve for non linear energy
-    int iter = 0;
-
-    // While not converge
-    // Empirical test: 10 iteration is more than what's really needed
-    while(iter < iterations)
-    {
-        // Clean and init
-        for(int i = 0; i < sizeX; i++)
-        {       
-            x(i) = 0;
-            b(i) = 0;
-            b_final(i) = 0;
-        }
-
-        // The first iteration is for building a harmonic solution
-        if(iter == 0)
-        {
-            // Build the system (harmonic)
-            qDebug() << "Building harmonics..";
-            buildHarmonic(A,b,sizeX);
-        }
-        else
-        {
-            // Build the system (bendfield)
-            qDebug() << "Building bendfield..";
-            buildCovariant(A,b,sizeX);
-        }
-
-        qDebug() << "Built!";
-
-        // Solve the system (normal equation)
-        // Find Transpose
-        A_transpose =  SpMat(A.transpose());
-
-        // Multiplication
-        A_final = A_transpose * A;
-        A_final.makeCompressed();
-
-        // The same for b
+    if(this->iteration == 0) {
+        // Inits
+        b.resize(sizeX);
         b_final.resize(sizeX);
-        b_final = A_transpose * b;
-
-        // Solver
-        // Test with 2 tolerances
-        // in case it can't find a solution
-        ConjugateGradient<SpMat> chol;
-        chol.compute(A_final);
-
-       if(chol.info()!=Success) {
-           qDebug() << "Compute failed" ;
-           return;
-        }
-        else
-        {
-           qDebug() << "Computed!" ;
-        }
-
-        chol.setTolerance(0.001);
-        // Solve
-        x = chol.solve(b_final);
-
-        if(chol.info()!=Success) {
-            qDebug() << "Solver failed" ;
-            return;
-         }
-         else
-         {
-            qDebug() << "Solved!" ;
-         }
-
-        // Save in the corresponding vector field
-        this->saveIntoField(x);
-
-        // Show residual
-        this->computeError(A,b,x,sizeX);
-
-        iter += 1;
-
-        qDebug() << "iter " << iter;
-
-         //glwidget->repaint();
+        x.resize(sizeX);
     }
 
-    // Normalize
+    // Clean and init
+    for(int i = 0; i < sizeX; i++)
+    {
+        x(i) = 0;
+        b(i) = 0;
+        b_final(i) = 0;
+    }
+
+    // The first iteration is for building a harmonic solution
+    if(this->iteration == 0)
+    {
+        // Build the system (harmonic)
+        qDebug() << "Building harmonics..";
+        buildHarmonic(A,b,sizeX);
+    }
+    else
+    {
+        // Build the system (bendfield)
+        qDebug() << "Building bendfield..";
+        buildCovariant(A,b,sizeX);
+    }
+
+    qDebug() << "Built!";
+
+    // Solve the system (normal equation)
+    // Find Transpose
+    A_transpose =  SpMat(A.transpose());
+
+    // Multiplication
+    A_final = A_transpose * A;
+    A_final.makeCompressed();
+
+    // The same for b
+    b_final.resize(sizeX);
+    b_final = A_transpose * b;
+
+    // Solver
+    // Test with 2 tolerances
+    // in case it can't find a solution
+    ConjugateGradient<SpMat> chol;
+    chol.compute(A_final);
+
+    if(chol.info()!=Success) {
+        qDebug() << "Compute failed" ;
+        return;
+    }
+    else
+    {
+        qDebug() << "Computed!" ;
+    }
+
+    chol.setTolerance(0.001);
+    // Solve
+    x = chol.solve(b_final);
+
+    if(chol.info()!=Success) {
+        qDebug() << "Solver failed" ;
+        return;
+    }
+    else
+    {
+        qDebug() << "Solved!" ;
+    }
+
+    // Save in the corresponding vector field
+    this->saveIntoField(x);
+
+    // Show residual
+    this->computeError(A,b,x,sizeX);
+
+
+    // Normalize crossfield at the end of the iteration(s)
+    // Not exactly necessary for each iteration, but not necessarily bad either.
     this->crossfield->normalize();
 
-    qDebug() << "Exit.. ";
+    this->iteration++;
+    qDebug() << "iter " << this->iteration;
 }
 
 // Saves the harmonic solution of the system stored in X

@@ -4,12 +4,14 @@ Canvas::Canvas()
 {
     strokeSize = 5;
     this->overlayColor = Qt::black;
+    this->numInteractions = 0;
     init(100,100);
 }
 
 Canvas::Canvas(const QImage &i) {
     strokeSize = 5;
     this->overlayColor = Qt::black;
+    this->numInteractions = 0;
     setImage(i);
 }
 
@@ -20,7 +22,7 @@ Canvas::~Canvas() {
 void Canvas::init(int width, int height, QColor fill) {
     image = QImage(width,height, QImage::Format_RGBA8888);
     image.fill(fill);
-    numInteractions = 0;
+    numInteractions++;
 }
 
 bool Canvas::setImage(const QImage &im, bool matchSize) {
@@ -30,7 +32,7 @@ bool Canvas::setImage(const QImage &im, bool matchSize) {
         }
     }
     image = im.convertToFormat(QImage::Format_RGBA8888);
-    numInteractions = numInteractions == 1 ? 2 : 1;
+    numInteractions++;
     return true;
 }
 
@@ -115,6 +117,7 @@ void Canvas::updateCursor(QWidget *parent) {
 }
 
 void Canvas::draw(QPainter *painter, QPaintEvent *event, QWidget *parent) {
+
     QRect pos = getDrawRect(parent);
 
     QImage scaled = image.scaled(pos.width(),pos.height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
@@ -126,6 +129,10 @@ void Canvas::draw(QPainter *painter, QPaintEvent *event, QWidget *parent) {
         p.end();
    }
     painter->drawImage(pos, scaled);
+}
+
+int Canvas::getNumInteractions() const {
+    return this->numInteractions;
 }
 
 QRect Canvas::getDrawRect(QWidget* parent) {

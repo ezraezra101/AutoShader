@@ -43,7 +43,6 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "crossfield.h"
 #include "periodjumpfield.h"
 #include "unknownsindexer.h"
-#include "glwidget.h"
 
 // External libraries / headers (Solvers, IO, Debugging)
 #include <QDebug>
@@ -89,6 +88,8 @@ class HarmonicCrossField
     // The Period jump field to compare any neighbouring pair of
     // crosses in the crossfield
     PeriodJumpField * pjumpfield;
+    // The undefineds remaining in the jumpfield
+    QVector<QPair<QPoint,QPoint> > * nonDefinedP;
 
     // For Eigen Solver (representation)
     vector<T>  * tripletList;
@@ -104,6 +105,9 @@ class HarmonicCrossField
 
     // Size of the crossfield
     int h,w;
+
+    bool finishedLastIteration;
+    bool isFirstIteration;
 
     // Initialization of the arrays for the Eigen solver (X,b)
     void inits();
@@ -165,6 +169,9 @@ public:
     // Iterative stitching method for solving the field
     void smoothWithIterativeGreedy();
 
+    void smoothIteration();
+
+    bool isDone();
 
 
 };

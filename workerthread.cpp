@@ -1,173 +1,88 @@
 #include "workerthread.h"
+#include "glwidget.h"
 
-#include "crossfield.h"
-#include "harmoniccrossfield.h"
-#include "bendfield.h"
-#include "periodjumpfield.h"
-#include "distancetransform.h"
-#include "unknownsindexer.h"
+#define STATE_INIT_CROSSFIELD 0
+#define STATE_HARMONIC_SMOOTH 1
+#define STATE_BENDFIELD_SMOOTH 2
+#define STATE_SLEEP 3
+#define STATE_WAKE 4
 
-#define DEBUG_PRINT(str) { std::cout << ">\t" << (str) << std::endl; }
-
-
-WorkerThread::WorkerThread()
+WorkerThread::WorkerThread(QObject *parent) : QThread(parent)
 {
-    this->crossfield = NULL;
-    this->pjumpfield = NULL;
+    constraintsCounter = 0;
+    curvatureCounter = 0;
+    restart = false;
+    abort = false;
+
+    connect(this,SIGNAL(renderedImages(QImage,QImage,QImage)),this, SLOT(finishImages(QImage,QImage,QImage)));
 }
+
 WorkerThread::~WorkerThread() {
-    if(this->crossfield != NULL) {
-        delete this->crossfield;
-    }
-    if(this->pjumpfield != NULL) {
-        delete this->pjumpfield;
+    mutex.lock();
+    abort = true;
+    condition.wakeOne();
+    mutex.unlock();
+    wait();
+}
+
+void WorkerThread::update(GLWidget *widget) {
+    QMutexLocker locker(&mutex);
+    this->widget = widget;
+    this->constraints = widget->getCanvas(GLWidget::CONSTRAINT_CANVAS).getImage();
+    this->curvature = widget->getCanvas(GLWidget::CURVATURE_CANVAS).getImage();
+    this->mask = widget->getCanvas(GLWidget::MASK_CANVAS).getImage();
+    this->concavity = widget->getCanvas(GLWidget::CONCAVITY_CANVAS).getImage();
+
+    this->constraintsCounter = widget->getCanvas(GLWidget::CONSTRAINT_CANVAS).getNumInteractions();
+    this->curvatureCounter = widget->getCanvas(GLWidget::CURVATURE_CANVAS).getNumInteractions();
+
+    if(!isRunning()) {
+        start(LowPriority);
+    } else {
+        restart = true;
+        condition.wakeOne();
     }
 }
 
-void WorkerThread::outputImages(GLWidget *widget) {
-    if(this->crossfield != NULL) {
-        widget->getCanvas(GLWidget::CROSSFIELD_CANVAS).setImage(drawCrosses(this->crossfield));
-        widget->getCanvas(GLWidget::NORMALS_CANVAS).setImage(drawNormals(this->crossfield));
-        widget->getCanvas(GLWidget::SHADING_CANVAS).setImage(drawShading(this->crossfield));
-        widget->repaint();
-    }
-}
 
-void WorkerThread::makeCrossField(QImage constraints, QImage curvature, QImage mask, GLWidget *dummy)
-{
-
-    initializeCrossField(constraints, curvature, mask);
-        outputImages(dummy);
-
-   std::cout << "Crossfield dimensions: " << crossfield->height() << "," << crossfield->width() <<std::endl;
-   std::cout << "Image dimensions: " << curvature.height() << "," << curvature.width() <<std::endl;
-   QImage normals = drawNormals(this->crossfield);
-   std::cout << "Normal image dimensions: " << normals.height() << "," << normals.width() <<std::endl;
-    return;
-    harmonicSmoothing();
-        outputImages(dummy);
-    covariantSmoothing();
-        outputImages(dummy);
-    rotateCrosses();
+void WorkerThread::finishImages(const QImage &crosses, const QImage &normals, const QImage &shading) {
+    this->widget->getCanvas(GLWidget::CROSSFIELD_CANVAS).setImage(crosses);
+    this->widget->getCanvas(GLWidget::NORMALS_CANVAS).setImage(normals);
+    this->widget->getCanvas(GLWidget::SHADING_CANVAS).setImage(shading);
+    this->widget->repaint();
 }
 
 
-void WorkerThread::initializeCrossField(QImage constraintsImg, QImage curvatureImg, QImage maskImg) {
-    if(this->pjumpfield != NULL) {
-        delete this->pjumpfield;
-    }
-    if(this->crossfield != NULL) {
-        delete this->crossfield;
-    }
-
-    // Existing code expects constraints and curvature to be combined...
-    QPainter p(&constraintsImg);
-    p.setCompositionMode(QPainter::CompositionMode_DestinationOver); // probably not too important
-    p.drawImage(0,0,curvatureImg);
-    p.end();
-
-    cv::Mat constraintsMat = ImageConverter::toMatRectifyAlpha(constraintsImg);
-    this->mask = ImageConverter::toMatRectifyAlpha(maskImg);
-
-    TangentMap tangents = TangentMap(constraintsMat);
-    cv::Mat maskCorners = tangents.getNocorners();
-
-    // Create and initialize crossfield
-    this->crossfield = new CrossField(constraintsMat.rows, constraintsMat.cols);
-    this->crossfield->initialiceThita(&tangents);
-    this->crossfield->setConstraintsMap(maskCorners,constraintsMat);
-
-
-    for(int i=0; i<this->crossfield->height(); i++) {
-        for(int j=0; j<this->crossfield->width(); j++) {
-            if(curvatureImg.pixel(j,i) != Qt::transparent)
-                this->crossfield->markAsCurvatureLine(i,j);
+void WorkerThread::run() {
+    bool newThread = true;
+    Worker worker;
+    int consCnt = 0, curvCnt = 0;
+    QImage concavityImg;
+    forever {
+        mutex.lock();
+        if(newThread || consCnt != this->curvatureCounter || curvCnt != this->curvatureCounter) {
+            worker = Worker(this->constraints, this->curvature, this->mask, this->concavity);
+            newThread = false;
+        } else {
+            concavityImg = this->concavity;
         }
+        consCnt = this->constraintsCounter;
+        curvCnt = this->curvatureCounter;
+        mutex.unlock();
+
+        if(!worker.isDone())
+            worker.smoothingIteration();
+        else
+            worker.updateConcavity(concavityImg);
+
+        emit renderedImages(worker.drawCrosses(), worker.drawNormals(), worker.drawShading());
+
+        mutex.lock();
+        if(!restart && worker.isDone())
+            condition.wait(&mutex);
+        if(abort)
+            return;
+        restart = false;
+        mutex.unlock();
     }
-    this->crossfield->updateConstraintsWithUserInput();
-
-    // Distance Transform
-    DistanceTransform dt;
-    LabeledMap * labeledMap = dt.filterDiscontinuity(maskCorners, this->crossfield);
-    labeledMap->generateInverseMap();
-
-    this->crossfield->initialice(labeledMap,constraintsMat, &tangents);
-
-    // Create Period-jump field
-    UnknownsIndexer index_harmonic = UnknownsIndexer(this->mask,2, this->crossfield);
-    this->pjumpfield = new PeriodJumpField(constraintsMat.rows,constraintsMat.cols);
-    this->pjumpfield->initialice(labeledMap, this->mask, &index_harmonic);
-}
-
-void WorkerThread::harmonicSmoothing() {
-    // Find topology - Harmonic Smoothing
-    UnknownsIndexer index_harmonic = UnknownsIndexer(this->mask,2, this->crossfield); // Never modified...
-
-    HarmonicCrossField smootherStitching(this->crossfield,this->pjumpfield, &index_harmonic);
-    smootherStitching.smoothWithIterativeGreedy(); // TODO put callback in there.
-}
-
-void WorkerThread::covariantSmoothing() {
-    // Index unknowns
-    UnknownsIndexer index_covariant(this->mask,4,this->crossfield); // Never changes
-
-    BendField smootherCovariant(this->crossfield,this->pjumpfield, &index_covariant);
-    smootherCovariant.smoothBendField();
-}
-
-void WorkerThread::rotateCrosses() {
-    UnknownsIndexer index_harmonic = UnknownsIndexer(this->mask,2, this->crossfield);
-    this->crossfield->rotateCrosses(this->pjumpfield, this->mask, &index_harmonic);
-    this->crossfield->checkPositiveAngles(&index_harmonic);
-}
-
-QImage WorkerThread::drawNormals(CrossField *crossfield) {
-    CrossField3D cf3(crossfield);
-    NormalField n(&cf3);
-    return n.toImage();
-}
-
-QImage WorkerThread::drawShading(CrossField *crossfield) {
-    CrossField3D cf3(crossfield);
-    NormalField n(&cf3);
-    return n.toShadedImage();
-}
-
-
-QImage WorkerThread::drawCrosses(CrossField *crossfield) {
-    // The simpler of the two crossfield visualizations in crossfieldgraphic.cpp
-
-    int height = crossfield->height();
-    int width = crossfield->width();
-    int step = 50;
-
-    QImage img(width, height, QImage::Format_RGBA8888);
-    img.fill(Qt::transparent);
-    QPainter painter;
-    painter.begin(&img);
-    QPen pen(QColor(0,0,0), 3);
-    painter.setPen(pen);
-
-    for(int i=0; i<height; i += step) { // Note: in my implementation, this is the crossfield's image size
-        for(int j=0; j<width; j += step) {
-            if(true) { // Not masked
-                if(!crossfield->isBoundaryPixel(i,j)) {
-                    int x = j;
-                    int y = i;
-                    Vec2d v_0 = crossfield->getV0(y,x);
-                    Vec2d v_1 = crossfield->getV1(y,x);
-                    Vec2d v_2 = crossfield->getV2(y,x);
-                    Vec2d v_3 = crossfield->getV3(y,x);
-
-                    painter.drawLine(x,y, x+v_0(0)*(step/2), y+v_0(1)*(step/2));
-                    painter.drawLine(x,y, x+v_1(0)*(step/2), y+v_1(1)*(step/2));
-                    painter.drawLine(x,y, x+v_2(0)*(step/2), y+v_2(1)*(step/2));
-                    painter.drawLine(x,y, x+v_3(0)*(step/2), y+v_3(1)*(step/2));
-                }
-            }
-        }
-    } // End for loops
-    painter.end();
-
-    return img;
 }

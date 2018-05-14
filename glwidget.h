@@ -41,6 +41,7 @@ knowledge of the CeCILL license and that you accept its terms.
 
 // Includes from the project
 #include "canvas.h"
+#include "workerthread.h"
 
 // External libraries / headers (Solvers, IO, Debugging)
 #include <QGLWidget>
@@ -76,6 +77,8 @@ public:
     void setVisibleCanvas(CanvasEnum c);
     Canvas &getCanvas(CanvasEnum c);
 
+    void updateOptimization();
+
 protected:
 
     void initializeGL();
@@ -100,6 +103,8 @@ private:
     Canvas shadingCanvas;
     CanvasEnum editable;
     CanvasEnum visible;
+
+    WorkerThread workerThread;
 };
 
 

@@ -80,8 +80,9 @@ SOURCES += main.cpp \
     bendfield.cpp \
     normalfield.cpp \
     canvas.cpp \
-    workerthread.cpp \
-    crossfield3d.cpp
+    crossfield3d.cpp \
+    worker.cpp \
+    workerthread.cpp
 
 HEADERS += \
     distancetransform.h \
@@ -102,8 +103,9 @@ HEADERS += \
     bendfield.h \
     normalfield.h \
     canvas.h \
-    workerthread.h \
-    crossfield3d.h
+    crossfield3d.h \
+    worker.h \
+    workerthread.h
 
 OTHER_FILES +=
 

@@ -42,7 +42,6 @@ knowledge of the CeCILL license and that you accept its terms.
 // Includes from the project
 #include "crossfield.h"
 #include "periodjumpfield.h"
-#include "glwidget.h"
 #include "unknownsindexer.h"
 
 // External libraries / headers (Solvers, IO, Debugging)
@@ -81,6 +80,18 @@ class BendField
     // Sizes
     int h,w,sizeX,numerOfEntries;
 
+
+    // Internal variables
+    VectorXd b;
+    VectorXd b_final;
+    VectorXd x;
+    // The matrix for solver
+    SpMat A;
+    SpMat A_transpose;
+    SpMat A_final;
+
+    int iteration;
+
     // Build system from the bendfield energy (eq 6 in the paper)
     void buildCovariant(SpMat &A, VectorXd& b, int sizeX);
 
@@ -112,7 +123,6 @@ class BendField
     // Maps the X 1D array to 2D crossfield
     QPoint getPixelInField(int row);
 
-
 public:
 
     // Constructor
@@ -128,8 +138,9 @@ public:
     BendField(CrossField * ,PeriodJumpField *, UnknownsIndexer *);
 
     // Iterative method for solving the BendField
-    void smoothBendField(int iterations = 10);
+    void smoothBendField();
 
+    bool isDone() const;
 };
 
 #endif // BENDFIELD_H

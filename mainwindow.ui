@@ -278,7 +278,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Export shading</string>
+           <string>Testing button</string>
           </property>
          </widget>
         </item>

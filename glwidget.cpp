@@ -49,7 +49,7 @@ GLWidget::GLWidget(QWidget *parent)
     curvatureCanvas = Canvas(); curvatureCanvas.init(x,y); curvatureCanvas.setColor(Qt::red);
     shadingCanvas = Canvas(); shadingCanvas.init(x,y);
     maskCanvas = Canvas(); maskCanvas.init(x,y); maskCanvas.setColor(Qt::darkRed);
-    concavityCanvas = Canvas(); concavityCanvas.init(x,y); concavityCanvas.setColor(Qt::darkCyan);
+    concavityCanvas = Canvas(); concavityCanvas.init(x,y); concavityCanvas.setColor(QColor(0,127,127,127));
     crossfieldCanvas = Canvas(); crossfieldCanvas.init(x,y, Qt::white);
     normalsCanvas = Canvas(); normalsCanvas.init(x,y, Qt::white);
     shadingCanvas = Canvas(); shadingCanvas.init(x,y, Qt::white);
@@ -102,6 +102,9 @@ void GLWidget::paintEvent(QPaintEvent *event)
     curvatureCanvas.draw(&painter, event, this);
     if(this->editable == GLWidget::MASK_CANVAS) {
         maskCanvas.draw(&painter, event, this);
+    }
+    if(this->editable == GLWidget::CONCAVITY_CANVAS) {
+        concavityCanvas.draw(&painter, event, this);
     }
 
     painter.end();
@@ -156,4 +159,8 @@ Canvas &GLWidget::getCanvas(CanvasEnum c) {
     default:
         return constraintCanvas;
     }
+}
+
+void GLWidget::updateOptimization() {
+    this->workerThread.update(this);
 }

@@ -57,10 +57,13 @@ knowledge of the CeCILL license and that you accept its terms.
 // when not initialized
 #define INIT_P_VALUE -60
 
-HarmonicCrossField::HarmonicCrossField() {}
+HarmonicCrossField::HarmonicCrossField() { finishedLastIteration = true;  isFirstIteration = true; }
 
 HarmonicCrossField::HarmonicCrossField(CrossField * c,PeriodJumpField * p, UnknownsIndexer * idx)
 {
+    finishedLastIteration = false;
+    isFirstIteration = true;
+
     // Point crossfield and pjumpfield
     this->crossfield = c;
     this->pjumpfield = p;
@@ -547,6 +550,281 @@ void HarmonicCrossField::insertInOrder_integer(QList<int> & list, int i)
     }
 
 }
+
+void HarmonicCrossField::smoothIteration() {
+    if(this->isFirstIteration) {
+        nonDefinedP = pjumpfield->getNonDefinedPList();
+
+        // Fill X by solving once exactly:
+        // performs a Cholesky factorization of A
+        SimplicialCholesky<SpMat> chol(this->A);
+        this->x = chol.solve(this->b);
+        qDebug()  << "TO STITCH " << nonDefinedP->size();
+
+        this->isFirstIteration = false;
+    }
+
+    // List of all the stitches to do in one iteration
+    QList<StitchData> toStitch;
+
+    // For every candidate edge, find the best one to stich (less cost)
+    // and add to the full system
+    for(int i = 0; i < nonDefinedP->size(); i++)
+    {
+        // Get alphas and betas
+        QPoint pixel_i(nonDefinedP->at(i).first.x(),nonDefinedP->at(i).first.y());
+        QPoint pixel_j(nonDefinedP->at(i).second.x(),nonDefinedP->at(i).second.y());
+
+        // Obtain alphas and betas from the solution vector
+        double alpha_i = x(getColInAforAlpha(pixel_i.x(),pixel_i.y()));
+        double beta_i = x(getColInAforBeta(pixel_i.x(),pixel_i.y()));
+
+        double alpha_j = x(getColInAforAlpha(pixel_j.x(),pixel_j.y()));
+        double beta_j = x(getColInAforBeta(pixel_j.x(),pixel_j.y()));
+
+        double cost = INFINITY;
+
+        // Find the best p and stimated quality comes in "cost"
+        int approx_p = this->getBestP(alpha_i,beta_i,alpha_j,beta_j,cost);
+
+        StitchData data;
+        data.i = i;
+        data.cost = cost;
+        data.approx_p = approx_p;
+
+        // Insert in order
+        this->insertInOrder(toStitch,data);
+    }
+
+    // Residuals x
+    QVector<int> residualsQueue;
+    QSet<int> elementsInQueue;
+    QVector<int> modifiedXIndex;
+
+    VectorXd residuals;
+    residuals = ((A * x) - b).cwiseAbs();
+
+    double accum_cost = 0;
+
+    QList<int> toRemove;
+
+    // Stitch only first one
+    // if(!toStitch.empty())
+    // ** Add constraints to A
+    while((accum_cost < MAXACCUMSTITCH)&&(!toStitch.empty()))
+    {
+
+        // Get p
+        int best_p = toStitch.first().approx_p;
+
+        // Accum cost
+        accum_cost += toStitch.first().cost;
+
+        // Stich best candidate
+        // Remove it from the list of non defined
+        QPair<QPoint,QPoint> bestCandidate = nonDefinedP->at(toStitch.first().i);
+
+        // To remove it after from the
+        insertInOrder_integer(toRemove,toStitch.first().i);
+
+        // Remove edge from toStitch list
+        toStitch.removeFirst();
+
+        // Save p
+        this->pjumpfield->setP(bestCandidate.first,bestCandidate.second,best_p);
+
+        // P mod 2, avoiding negative values of p
+        int best_p_mode_2 = ((best_p%2)+2)%2;
+
+        // Add equations to the system (stitching)
+
+        int first_i = bestCandidate.first.x();
+        int first_j = bestCandidate.first.y();
+        int second_i = bestCandidate.second.x();
+        int second_j = bestCandidate.second.y();
+
+        if((!((crossfield->isBoundaryPixel(first_i,first_j))&&(!crossfield->isCurvatureLine(first_i,first_j))))
+          &&!((crossfield->isBoundaryPixel(second_i,second_j))&&(!crossfield->isCurvatureLine(second_i,second_j))))
+        {
+            // The col corresponding to i
+            int col_i_alpha = getColInAforAlpha(first_i,first_j);
+            int col_i_beta = getColInAforBeta(first_i,first_j);
+
+            // The col corresponding to j
+            int col_j_alpha = getColInAforAlpha(second_i,second_j);
+            int col_j_beta = getColInAforBeta(second_i,second_j);
+
+            // To update residuals
+            if(!elementsInQueue.contains(col_i_alpha))
+            {
+                modifiedXIndex.push_back(col_i_alpha);
+                elementsInQueue.insert(col_i_alpha);
+            }
+            if(!elementsInQueue.contains(col_i_beta))
+            {
+                 modifiedXIndex.push_back(col_i_beta);
+                 elementsInQueue.insert(col_i_beta);
+            }
+            if(!elementsInQueue.contains(col_j_alpha))
+            {
+                modifiedXIndex.push_back(col_j_alpha);
+                elementsInQueue.insert(col_j_alpha);
+            }
+            if(!elementsInQueue.contains(col_j_beta))
+            {
+                modifiedXIndex.push_back(col_j_beta);
+                elementsInQueue.insert(col_j_beta);
+            }
+
+
+            // CONSTRAINTS SMOOTHNESS
+
+            // New values in A for alpha
+            // A(i,i) += 4
+            tripletList->push_back(T(col_i_alpha,col_i_alpha,WEIGHTSMOOTH* 4));
+            // A(j,j) += 4
+            tripletList->push_back(T(col_j_alpha,col_j_alpha,WEIGHTSMOOTH* 4));
+            // A(i,j) += -4
+            tripletList->push_back(T(col_i_alpha,col_j_alpha,WEIGHTSMOOTH* -4));
+            // A(j,i) += -4
+            tripletList->push_back(T(col_j_alpha,col_i_alpha,WEIGHTSMOOTH* -4));
+            // Crossed between î and j, ĵ and i are = 0
+            // A(î,î) += 4*(1-2*b)^2 = 4*(-1)^2 = 4
+            tripletList->push_back(T(col_i_beta,col_i_beta, WEIGHTSMOOTH* 4 * (1-2*(best_p_mode_2)) * (1-2*(best_p_mode_2))));
+            // A(ĵ,ĵ) += 4
+            tripletList->push_back(T(col_j_beta,col_j_beta, WEIGHTSMOOTH* 4));
+            // A(î,ĵ) += 4*(2*b-1) | b=0 => 4*(2*b-1) = 4*(-1) = -4
+            tripletList->push_back(T(col_i_beta,col_j_beta, WEIGHTSMOOTH*  4*((2*(best_p_mode_2))-1)));
+            // A(ĵ,î) += 4*(2*b-1) | b=0 => 4*(2*b-1) = 4*(-1) = -4
+            tripletList->push_back(T(col_j_beta,col_i_beta, WEIGHTSMOOTH* 4*((2*(best_p_mode_2))-1)));
+
+            // New row in B for alpha
+            // b(i) += -2*PI*p = 0
+            this->b(col_i_alpha) += WEIGHTSMOOTH* -2*M_PI*best_p;
+            // b(j) += -2*PI*p = 0
+            this->b(col_j_alpha) += WEIGHTSMOOTH* 2*M_PI*best_p;
+            // b(î) += 0
+            this->b(col_i_beta) += 0;
+            // b(ĵ) += 0
+            this->b(col_j_beta) += 0;
+        }
+
+    }
+
+    // Remove from nonDefinedP (from the back to the front, to avoid altering the ordering)
+    for(int i = 0; i < toRemove.size(); i++)
+    {
+        nonDefinedP->remove(toRemove.at(i));
+    }
+
+    // Set matrix from list
+    this->A.setFromTriplets(tripletList->begin(), tripletList->end());
+    this->A.makeCompressed();
+
+    // Stack of options to solve the system
+    // First, local Gauss Seidel by stimating residuals (just update x locally)
+
+    // Residual = Old x - updated A times x - b
+    residuals = residuals - ((A * x) - b).cwiseAbs();
+
+    elementsInQueue.clear();
+
+    // Push Residuals (Now filter by error)
+    for(int k = 0; k < modifiedXIndex.size(); k++)
+    {
+        if(abs(residuals(modifiedXIndex.at(k))) > 0.1)
+        {
+            residualsQueue.push_front(modifiedXIndex.at(k));
+            elementsInQueue.insert(modifiedXIndex.at(k));
+        }
+    }
+
+    // Solve with the stack of solvers
+
+    // First try local update (Fast)
+    qDebug() << "TRY WITH GAUSS " << nonDefinedP->size();
+
+    QTime t;
+    t.start();
+    bool gauss = localGaussSeidel(residualsQueue,elementsInQueue);
+
+    // Then, try Conjugate Gradient (Fast--)
+    if(!gauss)
+    {
+        qDebug() << "TRY WITH GRADIENT " << nonDefinedP->size();
+
+        VectorXd auxX = x;
+        t.restart();
+        // If it didn't converged
+        // then, try global iterative
+        ConjugateGradient<SparseMatrix<double> > cg;
+        cg.compute(this->A);
+        cg.setMaxIterations(1000);
+        cg.setTolerance(0.001);
+        auxX = cg.solveWithGuess(this->b,this->x);
+
+        // Then, try Cholesky (Slow)
+        if(cg.info()==Success)
+        {
+            this->x = auxX;
+        }
+        else
+        {
+            qDebug() << "TRY WITH CHOLESKY " << nonDefinedP->size();
+            // If it didn't converged
+            // then, try global cholesky
+            SimplicialCholesky<SpMat> chol2(this->A);
+            this->x = chol2.solve(this->b);
+        }
+    }
+
+    if(nonDefinedP->empty()) {
+        // Run one last time exactly (Cholesky)
+        // performs a Cholesky factorization of A
+        SimplicialCholesky<SpMat> chol3(this->A);
+        this->x = chol3.solve(this->b);
+        if(chol3.info()==Success)
+        {
+            qDebug() << "Last exact solution: SUCCESS";
+        }
+        else
+        {
+            qDebug() << "Solve CG with a lot more presition";
+
+            VectorXd auxX = x;
+            ConjugateGradient<SparseMatrix<double> > cg;
+            cg.compute(this->A);
+            cg.setMaxIterations(1000000);
+            cg.setTolerance(0.00001);
+            auxX = cg.solveWithGuess(this->b,this->x);
+
+            if(cg.info()==Success)
+            {
+                qDebug() << "SUCCESS!";
+                this->x = auxX;
+            }
+            else
+            {
+                qDebug() << "WARNING: FAIL SOLVING";
+            }
+        }
+
+        // Save into crossfield
+        saveIntoCrossfield();
+
+        // Generate V0-V1 field (change representation to be able to run BendField algorithm
+        this->crossfield->generate_V0V1_field();
+
+        // Print information
+        this->printEnergy(crossfield,pjumpfield,0);
+        this->finishedLastIteration = true;
+    }
+}
+
+bool HarmonicCrossField::isDone() {
+    return finishedLastIteration;
+}
+
 
 // Iterative stitching method for solving the field
 void HarmonicCrossField::smoothWithIterativeGreedy()

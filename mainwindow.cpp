@@ -118,29 +118,27 @@ void MainWindow::drawConvexity() {
     this->ui->glwidget->setActiveCanvas(GLWidget::CONCAVITY_CANVAS);
 }
 
-#import <cv.h>
-
 void MainWindow::exportShading() {
     QMessageBox msgBox;
     msgBox.setText("This hasn't been implemented yet!\nBut we're using it to create a crossfield!"); // TODO
     msgBox.exec();
 
     QString foldername = "/Users/ezradavis/Desktop/Ezra's_Folder/school/Yale/Advanced Graphics Sketching/final project/BendFields_OSX/Sketches/";
-    QString filename  = foldername + "bracelet_l1";
+    QString filename  = foldername + "stapler_l1";
+
+    QImage img(filename + "_constraints.png");
+    int width = img.width();
+    int height = img.height();
+    this->ui->glwidget->getCanvas(GLWidget::CONCAVITY_CANVAS).init(width, height);
+    this->ui->glwidget->getCanvas(GLWidget::CROSSFIELD_CANVAS).init(width, height, Qt::white);
+    this->ui->glwidget->getCanvas(GLWidget::NORMALS_CANVAS).init(width, height, Qt::white);
+    this->ui->glwidget->getCanvas(GLWidget::SHADING_CANVAS).init(width, height, Qt::white);
+
     this->ui->glwidget->getCanvas(GLWidget::CONSTRAINT_CANVAS).setImage(ImageConverter::loadImage(filename + "_constraints.png"));
     this->ui->glwidget->getCanvas(GLWidget::CURVATURE_CANVAS).setImage(ImageConverter::loadImage(filename + "_curvature.png"));
     this->ui->glwidget->getCanvas(GLWidget::MASK_CANVAS).setImage(ImageConverter::loadImage(filename + "_mask.png"));
-
     this->ui->glwidget->repaint();
-
-    WorkerThread w;
-    w.makeCrossField(
-                this->ui->glwidget->getCanvas(GLWidget::CONSTRAINT_CANVAS).getImage(),
-                this->ui->glwidget->getCanvas(GLWidget::CURVATURE_CANVAS).getImage(),
-                this->ui->glwidget->getCanvas(GLWidget::MASK_CANVAS).getImage(),
-                // Strip this out later:
-                this->ui->glwidget
-                );
+    this->ui->glwidget->updateOptimization();
 }
 
 void MainWindow::visibilityRadio() {
@@ -177,6 +175,7 @@ void MainWindow::loadImageButton(GLWidget::CanvasEnum c) {
     QString sketchFileName = QFileDialog::getOpenFileName(this, tr("Open File"),this->openFileName,tr("Sketch (*.png)"));
 
     if(!sketchFileName.isEmpty()) {
+        qDebug() << "Loading " << sketchFileName;
         QImage img = ImageConverter::loadImage(sketchFileName);
 
         if(c == GLWidget::CONSTRAINT_CANVAS) {
@@ -189,11 +188,14 @@ void MainWindow::loadImageButton(GLWidget::CanvasEnum c) {
             this->ui->glwidget->getCanvas(GLWidget::CROSSFIELD_CANVAS).init(width, height, Qt::white);
             this->ui->glwidget->getCanvas(GLWidget::NORMALS_CANVAS).init(width, height, Qt::white);
             this->ui->glwidget->getCanvas(GLWidget::SHADING_CANVAS).init(width, height, Qt::white);
-        }
-        if(!this->ui->glwidget->getCanvas(c).setImage(img, true)) {
-            QMessageBox msgBox;
-            msgBox.setText("Image sizes must match the original drawing constraints image.");
-            msgBox.exec();
+            this->ui->glwidget->getCanvas(c).setImage(img, false);
+
+        } else {
+            if(!this->ui->glwidget->getCanvas(c).setImage(img, true)) {
+                QMessageBox msgBox;
+                msgBox.setText("Image sizes must match the original drawing constraints image.");
+                msgBox.exec();
+            }
         }
         this->ui->glwidget->setActiveCanvas(c);
         this->ui->glwidget->repaint();

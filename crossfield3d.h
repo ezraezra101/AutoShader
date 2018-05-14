@@ -15,7 +15,7 @@ class CrossField3D
 
 public:
     CrossField3D();
-    CrossField3D(CrossField *);
+    CrossField3D(CrossField *, const QImage &convexityGuidance);
     ~CrossField3D();
 
     inline int height(){ return this->h; }

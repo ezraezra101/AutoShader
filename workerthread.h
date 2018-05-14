@@ -1,39 +1,38 @@
 #ifndef WORKERTHREAD_H
 #define WORKERTHREAD_H
 
-#include <cv.h>
-#include <QImage>
+#include <QThread>
+#include <QWaitCondition>
 
-#include "crossfield.h"
-#include "crossfield3d.h"
-#include "normalfield.h"
-#include "glwidget.h"
-#include "imageconverter.h"
+#include "worker.h"
 
-class WorkerThread
+class GLWidget;
+
+class WorkerThread : public QThread
 {
+    Q_OBJECT
 public:
-    WorkerThread();
+    explicit WorkerThread(QObject *parent = nullptr);
     ~WorkerThread();
 
-    void makeCrossField(QImage constraints, QImage curvature, QImage mask, GLWidget * dummy); // TODO remove dummy
+    void update(GLWidget *widget);
 
-    void outputImages(GLWidget *w);
-
-    QImage drawNormals(CrossField *crossfield);
-    QImage drawShading(CrossField *crossfield);
-    QImage drawCrosses(CrossField *cf);
+signals:
+    void renderedImages(const QImage &, const QImage &, const QImage &);
+public slots:
+    void finishImages(const QImage &, const QImage &, const QImage &);
+protected:
+    void run() override;
 
 private:
-    void initializeCrossField(QImage constraintsImg, QImage curvatureImg, QImage maskImg);
-    void harmonicSmoothing();
-    void covariantSmoothing();
-    void rotateCrosses();
+    QMutex mutex;
+    QWaitCondition condition;
+    QImage constraints, curvature, mask, concavity;
+    int constraintsCounter, curvatureCounter;
+    bool restart;
+    bool abort;
 
-    CrossField *crossfield;
-    PeriodJumpField *pjumpfield;
-    cv::Mat mask;
-
+    GLWidget *widget;
 };
 
 #endif // WORKERTHREAD_H

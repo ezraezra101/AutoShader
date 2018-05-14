@@ -31,7 +31,7 @@ public:
 
     void draw(QPainter * painter, QPaintEvent *event, QWidget *parent);
 
-    int getNumInteractions();
+    int getNumInteractions() const;
 
 private:
     QRect getDrawRect(QWidget* parent);
