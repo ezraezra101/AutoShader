@@ -3,11 +3,13 @@
 Canvas::Canvas()
 {
     strokeSize = 5;
+    this->overlayColor = Qt::black;
     init(100,100);
 }
 
 Canvas::Canvas(const QImage &i) {
     strokeSize = 5;
+    this->overlayColor = Qt::black;
     setImage(i);
 }
 
@@ -34,6 +36,10 @@ bool Canvas::setImage(const QImage &im, bool matchSize) {
 
 QImage Canvas::getImage() {
     return image;
+}
+
+void Canvas::setColor(QColor c) {
+    this->overlayColor = c;
 }
 
 
@@ -90,8 +96,12 @@ void Canvas::updateCursor(QWidget *parent) {
     QPainter painter(&cursor_img);
     painter.setRenderHint(QPainter::HighQualityAntialiasing);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
-    QBrush brush(QColor(255,0,0,200));
-    QPen pen(QColor(0,0,0,0),0);
+
+    QColor color = this->overlayColor;
+    color.setAlpha(200);
+
+    QBrush brush(color);
+    QPen pen(QColor(255,255,255,255),2);
 
     painter.setPen(pen);
     painter.setBrush(brush);
@@ -107,8 +117,15 @@ void Canvas::updateCursor(QWidget *parent) {
 void Canvas::draw(QPainter *painter, QPaintEvent *event, QWidget *parent) {
     QRect pos = getDrawRect(parent);
 
-    //QImage scaled = image.scaled(pos.width(),pos.height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
-    painter->drawImage(pos,image);
+    QImage scaled = image.scaled(pos.width(),pos.height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+
+    if(this->overlayColor != Qt::black) {
+        QPainter p(&scaled);
+        p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+        p.fillRect(scaled.rect(), this->overlayColor);
+        p.end();
+   }
+    painter->drawImage(pos, scaled);
 }
 
 QRect Canvas::getDrawRect(QWidget* parent) {

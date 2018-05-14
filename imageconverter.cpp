@@ -43,7 +43,7 @@ ImageConverter::ImageConverter(){
 
 QImage ImageConverter::loadImage(QString filename) {
     // Note: this is probably slow because of setPixelColor...
-    QImage image = QImage(filename);
+    QImage image = QImage(filename).convertToFormat(QImage::Format_RGBA8888);
     for(int i=0; i<image.height(); i++) {
         for(int j=0; j<image.width(); j++) {
             QColor c = image.pixel(j,i);
@@ -56,6 +56,8 @@ QImage ImageConverter::loadImage(QString filename) {
 }
 
 Mat ImageConverter::toMatRectifyAlpha(const QImage &img) {
+    // This converts a QImage to a mat that would have existed if we had used imread. Notably, it gets the transpose of the direct transformation.
+
     // The function signature here doesn't match the rest of imageConverter... oh well.
 
     QImage image(img.width(),img.height(), QImage::Format_RGB888);
@@ -68,7 +70,7 @@ Mat ImageConverter::toMatRectifyAlpha(const QImage &img) {
     Mat *m = ImageConverter::toMat(&image);
     Mat mat = m->clone();
     delete m;
-    return mat;
+    return mat.t();
 }
 
 QImage * ImageConverter::toQImage(Mat * img)

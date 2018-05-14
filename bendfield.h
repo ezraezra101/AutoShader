@@ -128,7 +128,7 @@ public:
     BendField(CrossField * ,PeriodJumpField *, UnknownsIndexer *);
 
     // Iterative method for solving the BendField
-    void smoothBendField();
+    void smoothBendField(int iterations = 10);
 
 };
 

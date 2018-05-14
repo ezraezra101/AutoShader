@@ -45,11 +45,11 @@ GLWidget::GLWidget(QWidget *parent)
     this->visible = SHADING_CANVAS;
 
     int x = 600, y = 400;
-    constraintCanvas = Canvas(); constraintCanvas.init(x,y);
-    curvatureCanvas = Canvas(); curvatureCanvas.init(x,y);
+    constraintCanvas = Canvas(); constraintCanvas.init(x,y); constraintCanvas.setColor(Qt::darkBlue);
+    curvatureCanvas = Canvas(); curvatureCanvas.init(x,y); curvatureCanvas.setColor(Qt::red);
     shadingCanvas = Canvas(); shadingCanvas.init(x,y);
-    maskCanvas = Canvas(); maskCanvas.init(x,y);
-    concavityCanvas = Canvas(); concavityCanvas.init(x,y);
+    maskCanvas = Canvas(); maskCanvas.init(x,y); maskCanvas.setColor(Qt::darkRed);
+    concavityCanvas = Canvas(); concavityCanvas.init(x,y); concavityCanvas.setColor(Qt::darkCyan);
     crossfieldCanvas = Canvas(); crossfieldCanvas.init(x,y, Qt::white);
     normalsCanvas = Canvas(); normalsCanvas.init(x,y, Qt::white);
     shadingCanvas = Canvas(); shadingCanvas.init(x,y, Qt::white);

@@ -479,7 +479,7 @@ void BendField::buildCovariant(SpMat &A, VectorXd& b, int sizeX)
 }
 
 // Iterative method for solving the BendField
-void BendField::smoothBendField()
+void BendField::smoothBendField(int iterations)
 {
     // The matrix for solver
     SpMat A;
@@ -501,7 +501,7 @@ void BendField::smoothBendField()
 
     // While not converge
     // Empirical test: 10 iteration is more than what's really needed
-    while(iter < 10)
+    while(iter < iterations)
     {
         // Clean and init
         for(int i = 0; i < sizeX; i++)

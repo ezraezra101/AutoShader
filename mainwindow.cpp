@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->openFileName = "../sketches/";
+
     // Resize window
     // get the dimension available on this screen
     QSize availableSize = qApp->desktop()->availableGeometry().size();
@@ -116,12 +118,15 @@ void MainWindow::drawConvexity() {
     this->ui->glwidget->setActiveCanvas(GLWidget::CONCAVITY_CANVAS);
 }
 
+#import <cv.h>
+
 void MainWindow::exportShading() {
     QMessageBox msgBox;
     msgBox.setText("This hasn't been implemented yet!\nBut we're using it to create a crossfield!"); // TODO
     msgBox.exec();
 
-    QString filename = "/Users/ezradavis/Desktop/Ezra's_Folder/school/Yale/Advanced Graphics Sketching/final project/BendFields_OSX/Sketches/bracelet_l1";
+    QString foldername = "/Users/ezradavis/Desktop/Ezra's_Folder/school/Yale/Advanced Graphics Sketching/final project/BendFields_OSX/Sketches/";
+    QString filename  = foldername + "bracelet_l1";
     this->ui->glwidget->getCanvas(GLWidget::CONSTRAINT_CANVAS).setImage(ImageConverter::loadImage(filename + "_constraints.png"));
     this->ui->glwidget->getCanvas(GLWidget::CURVATURE_CANVAS).setImage(ImageConverter::loadImage(filename + "_curvature.png"));
     this->ui->glwidget->getCanvas(GLWidget::MASK_CANVAS).setImage(ImageConverter::loadImage(filename + "_mask.png"));
@@ -169,7 +174,7 @@ void MainWindow::about()
 
 void MainWindow::loadImageButton(GLWidget::CanvasEnum c) {
     // Open File Dialog
-    QString sketchFileName = QFileDialog::getOpenFileName(this, tr("Open File"),"../sketches/",tr("Sketch (*.png)"));
+    QString sketchFileName = QFileDialog::getOpenFileName(this, tr("Open File"),this->openFileName,tr("Sketch (*.png)"));
 
     if(!sketchFileName.isEmpty()) {
         QImage img = ImageConverter::loadImage(sketchFileName);

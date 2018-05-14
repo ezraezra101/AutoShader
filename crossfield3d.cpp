@@ -12,7 +12,7 @@ void cross2dTo3d(Vec2d v_0, Vec2d v_1, Vec3d *v_0_3, Vec3d *v_1_3)
     double dot = Vec2dOperations::dotProduct(v_0, v_1);
     double z = sqrt(abs(dot));
     *v_0_3 = Vec3dOperations::getNormalized(Vec3d(v_0(0), v_0(1), z));
-    *v_1_3 = Vec3dOperations::getNormalized(Vec3d(v_0(0), v_0(1), dot <= 0 ? z : -z));
+    *v_1_3 = Vec3dOperations::getNormalized(Vec3d(v_1(0), v_1(1), dot <= 0 ? z : -z));
 }
 
 CrossField3D::CrossField3D(CrossField *cf) {
@@ -21,10 +21,12 @@ CrossField3D::CrossField3D(CrossField *cf) {
 
     this->v0_Field = new Vec3d[this->width() * this->height()];
     this->v1_Field = new Vec3d[this->width() * this->height()];
-    for(int i=0; i < this->height(); i++) {
-        for(int j=0; j < this->width(); j++) {
-            cross2dTo3d(cf->getV0(i,j), cf->getV1(i,j),
-                        &(this->v0_Field[index(j,i)]), &(this->v1_Field[index(j,i)]));
+
+    for(int y=0; y < this->height(); y++) {
+        for(int x=0; x < this->width(); x++) {
+            cross2dTo3d(
+                        cf->getV0(y,x), cf->getV1(y,x),
+                        &(this->v0_Field[index(x,y)]), &(this->v1_Field[index(x,y)]));
         }
     }
 }

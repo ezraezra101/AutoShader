@@ -16,7 +16,7 @@ NormalField::NormalField(CrossField3D *crossfield)
         for(int j=0; j < this->width(); j++) {
             Vec3d v_0 = crossfield->getV0(i,j);
             Vec3d v_1 = crossfield->getV1(i,j);
-            this->normals[this->index(i,j)] = NormalField::crossToNormal(v_0, v_1);
+            this->normals[this->index(j,i)] = NormalField::crossToNormal(v_0, v_1);
         }
     }
 }
@@ -40,16 +40,18 @@ Vec3d NormalField::crossToNormal(Vec3d v_0, Vec3d v_1)
 
 QColor NormalField::getColor(int x, int y) {
     Vec3d n = this->normals[this->index(x,y)];
-    return QColor((int)255*(n(0)+1)/2, (int)255*(n(1)+1)/2, (int)255*(n(2)+1)/2, 255);
+    n += Vec3d(1,1,1);
+    n /= 2;
+    return QColor((int)255*n(0), (int)255*n(1), (int)255*n(2));
 }
 
 QImage NormalField::toImage() {
-    QImage img = QImage(this->width(), this->height(), QImage::Format_ARGB32);
-    for(int i=0; i < img.height(); i++) {
-        for(int j=0; j < img.width(); j++) {
-            QColor color = this->getColor(j,i);
+    QImage img = QImage(this->height(), this->width(), QImage::Format_ARGB32);
+    for(int y=0; y < this->height(); y++) {
+        for(int x=0; x < this->width(); x++) {
+            QColor color = this->getColor(x,y);
 
-            img.setPixelColor(j,i,color); // Apparently somewhat slow...
+            img.setPixelColor(y,x,color); // Apparently somewhat slow...
         }
     }
     return img;
@@ -70,11 +72,12 @@ QColor shader(Vec3d n) {
 }
 
 QImage NormalField::toShadedImage() {
-    QImage img = QImage(this->width(), this->height(), QImage::Format_ARGB32);
-    for(int i=0; i < img.height(); i++) {
-        for(int j=0; j < img.width(); j++) {
-            QColor color = shader(this->normals[this->index(j,i)]);
-            img.setPixelColor(j,i,color); // Apparently somewhat slow...
+    QImage img = QImage(this->height(), this->width(), QImage::Format_ARGB32); // Note: Performing transpose here!
+    for(int y=0; y < this->height(); y++) {
+        for(int x=0; x < this->width(); x++) {
+            QColor color = shader(this->normals[this->index(x,y)]);
+
+            img.setPixelColor(y,x,color); // Apparently somewhat slow...
         }
     }
     return img;

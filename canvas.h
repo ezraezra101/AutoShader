@@ -14,6 +14,7 @@ class Canvas
     QImage image;
     int strokeSize;
     int numInteractions;
+    QColor overlayColor;
 public:
     Canvas();
     Canvas(const QImage &i);
@@ -22,6 +23,7 @@ public:
     void init(int width, int height, QColor fill=Qt::transparent);
     bool setImage(const QImage &im, bool matchSize = false);
     QImage getImage();
+    void setColor(QColor);
 
     void mouseEvent(QMouseEvent *m, QWidget *parent);
     void mouseWheelEvent(QWheelEvent *w, QWidget *parent);
