@@ -26,6 +26,7 @@ void Canvas::init(int width, int height, QColor fill) {
 }
 
 bool Canvas::setImage(const QImage &im, bool matchSize) {
+    qDebug("Setting image");
     if(matchSize) {
         if(im.height() != image.height() || im.width() != image.width()) {
             return false;

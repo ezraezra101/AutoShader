@@ -278,7 +278,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Testing button</string>
+           <string>Restart Normal Generation</string>
           </property>
          </widget>
         </item>

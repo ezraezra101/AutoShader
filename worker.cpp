@@ -2,6 +2,7 @@
 
 #include <QMessageBox>
 
+
 Worker::Worker()
 {
     this->crossfield = NULL;
@@ -42,6 +43,8 @@ Worker::~Worker() {
 
 
 void Worker::smoothingIteration() {
+    QTime time;
+    time.start();
     if(this->crossfield == NULL) {
         qDebug() << "Initializing crossfield";
         this->initializeCrossField();
@@ -50,7 +53,9 @@ void Worker::smoothingIteration() {
         qDebug() << "Initializing harmonic crossfield";
         // Find topology - Harmonic Smoothing
         this->index_harmonic =  new UnknownsIndexer(this->mask,2, this->crossfield);
-       this->harmoniccrossfield = new HarmonicCrossField(this->crossfield,this->pjumpfield, this->index_harmonic);
+        this->harmoniccrossfield = new HarmonicCrossField(this->crossfield,this->pjumpfield, this->index_harmonic);
+//        HarmonicCrossFieldPristine hcp(this->crossfield, this->pjumpfield, this->index_harmonic, this->mask);
+//        hcp.smoothWithIterativeGreedy();
 
     } else if(!this->harmoniccrossfield->isDone()) {
         qDebug() << "Harmonic smoothing";
@@ -65,11 +70,8 @@ void Worker::smoothingIteration() {
         qDebug() << "Bendfield smoothing";
         bendfield->smoothBendField();
     }
-    if(this->bendfield != NULL && this->bendfield->isDone()) {
-        rotateCrosses();
-    }
 
-    makeCrossField3d(concavity);
+    qDebug() << time.elapsed() << "ms spent this smoothing iteration";
 }
 
 void Worker::updateConcavity(QImage concavity) {
@@ -128,6 +130,54 @@ void Worker::initializeCrossField() {
     this->pjumpfield = new PeriodJumpField(this->crossfield->height(),this->crossfield->width());
     this->pjumpfield->initialice(labeledMap, this->mask, &index_harmonic);
 }
+/*
+void Worker::initializeCrossField() {
+    if(this->pjumpfield != NULL) {
+        delete this->pjumpfield;
+    }
+    if(this->crossfield != NULL) {
+        delete this->crossfield;
+    }
+
+    // Existing code expects constraints and curvature to be combined...
+    QPainter p(&(this->constraints));
+    p.setCompositionMode(QPainter::CompositionMode_DestinationOver); // probably not too important
+    p.drawImage(0,0,this->curvature);
+    p.end();
+
+    cv::Mat constraintsMat = ImageConverter::toMatRectifyAlpha(this->constraints);
+    this->mask = ImageConverter::toMatRectifyAlpha(this->maskImg);
+
+    TangentMap tangents = TangentMap(constraintsMat);
+    cv::Mat maskCorners = tangents.getNocorners();
+
+    // Create and initialize crossfield
+    this->crossfield = new CrossField(constraintsMat.rows, constraintsMat.cols);
+    this->crossfield->initialiceThita(&tangents);
+    this->crossfield->setConstraintsMap(maskCorners,constraintsMat);
+
+
+    // Sigh... crossfield (and everything else) is transposed from the QImages.
+    for(int i=0; i<this->crossfield->height(); i++) {
+        for(int j=0; j<this->crossfield->width(); j++) {
+            if(this->curvature.pixel(i,j) != Qt::transparent)
+                this->crossfield->markAsCurvatureLine(i,j);
+        }
+    }
+    this->crossfield->updateConstraintsWithUserInput();
+
+    // Distance Transform
+    DistanceTransform dt;
+    LabeledMap * labeledMap = dt.filterDiscontinuity(maskCorners, this->crossfield);
+    labeledMap->generateInverseMap();
+
+    this->crossfield->initialice(labeledMap,constraintsMat, &tangents);
+    // Create Period-jump field
+    UnknownsIndexer index_harmonic = UnknownsIndexer(this->mask,2, this->crossfield);
+    this->pjumpfield = new PeriodJumpField(this->crossfield->height(),this->crossfield->width());
+    this->pjumpfield->initialice(labeledMap, this->mask, &index_harmonic);
+}
+*/
 
 void Worker::makeCrossField3d(const QImage &concavity) {
     if(this->crossfield3d != NULL) {
@@ -145,6 +195,7 @@ void Worker::rotateCrosses() {
 
 // Places img on a white background as defined by mask.
 QImage Worker::maskTheImage(QImage img) {
+
     QPainter p(&img);
     p.setCompositionMode(QPainter::CompositionMode_DestinationOut);
     p.drawImage(0,0,this->maskImg);
@@ -157,13 +208,15 @@ QImage Worker::maskTheImage(QImage img) {
 }
 
 QImage Worker::drawNormals() {
-    Q_ASSERT(hasCrossField3d());
+    rotateCrosses();
+    makeCrossField3d(this->concavity);
     NormalField n(this->crossfield3d);
     return maskTheImage(n.toImage());
 }
 
 QImage Worker::drawShading() {
-    Q_ASSERT(hasCrossField3d());
+    rotateCrosses();
+    makeCrossField3d(this->concavity);
     NormalField n(this->crossfield3d);
     return maskTheImage(n.toShadedImage());
 }

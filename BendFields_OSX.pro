@@ -82,7 +82,8 @@ SOURCES += main.cpp \
     canvas.cpp \
     crossfield3d.cpp \
     worker.cpp \
-    workerthread.cpp
+    workerthread.cpp \
+    harmoniccrossfieldpristine.cpp
 
 HEADERS += \
     distancetransform.h \
@@ -105,7 +106,8 @@ HEADERS += \
     canvas.h \
     crossfield3d.h \
     worker.h \
-    workerthread.h
+    workerthread.h \
+    harmoniccrossfieldpristine.h
 
 OTHER_FILES +=
 
@@ -133,6 +135,9 @@ DEPENDPATH += /usr/local/include/opencv2/include
 INCLUDEPATH += $$PWD/../../../usr/local/include
 DEPENDPATH += $$PWD/../../../usr/local/include
 DEPENDPATH += $$PWD/../../../usr/local/lib
+
+DISTFILES += \
+    README.md
 
 
 

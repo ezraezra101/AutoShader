@@ -31,6 +31,7 @@ private:
     int constraintsCounter, curvatureCounter;
     bool restart;
     bool abort;
+    bool resetOptimization;
 
     GLWidget *widget;
 };

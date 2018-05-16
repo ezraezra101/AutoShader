@@ -119,6 +119,7 @@ void MainWindow::drawConvexity() {
 }
 
 void MainWindow::exportShading() {
+    /*
     QMessageBox msgBox;
     msgBox.setText("This hasn't been implemented yet!\nBut we're using it to create a crossfield!"); // TODO
     msgBox.exec();
@@ -138,6 +139,7 @@ void MainWindow::exportShading() {
     this->ui->glwidget->getCanvas(GLWidget::CURVATURE_CANVAS).setImage(ImageConverter::loadImage(filename + "_curvature.png"));
     this->ui->glwidget->getCanvas(GLWidget::MASK_CANVAS).setImage(ImageConverter::loadImage(filename + "_mask.png"));
     this->ui->glwidget->repaint();
+    */
     this->ui->glwidget->updateOptimization();
 }
 

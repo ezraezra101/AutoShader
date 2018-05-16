@@ -40,7 +40,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #define TIME() { qDebug() << timer.restart() << "ms on line " << __LINE__;}
 
 
-#include "harmoniccrossfield.h"
+#include "harmoniccrossfieldpristine.h"
 
 // Weight of the B small constraint
 // called  W_b in the paper (eq. 5)
@@ -61,16 +61,15 @@ knowledge of the CeCILL license and that you accept its terms.
 // when not initialized
 #define INIT_P_VALUE -60
 
-HarmonicCrossField::HarmonicCrossField() { finishedLastIteration = true;  isFirstIteration = true; }
+HarmonicCrossFieldPristine::HarmonicCrossFieldPristine() {}
 
-HarmonicCrossField::HarmonicCrossField(CrossField * c,PeriodJumpField * p, UnknownsIndexer * idx)
+HarmonicCrossFieldPristine::HarmonicCrossFieldPristine(CrossField * c,PeriodJumpField * p, UnknownsIndexer * idx, Mat m)
 {
-    finishedLastIteration = false;
-    isFirstIteration = true;
-
     // Point crossfield and pjumpfield
     this->crossfield = c;
     this->pjumpfield = p;
+    this->mask = m;
+
     // Index
     this->index = idx;
 
@@ -98,7 +97,7 @@ HarmonicCrossField::HarmonicCrossField(CrossField * c,PeriodJumpField * p, Unkno
 }
 
 // Returns period jump information for a single cross [i,j] (right and bottom P)
-int * HarmonicCrossField::getP(PeriodJumpField * pjumpfield, int i, int j)
+int * HarmonicCrossFieldPristine::getP(PeriodJumpField * pjumpfield, int i, int j)
 {
     int * p = new int[4];
 
@@ -109,7 +108,7 @@ int * HarmonicCrossField::getP(PeriodJumpField * pjumpfield, int i, int j)
 }
 
 // Return Alpha angle from the cross [i,j] neighbours (right and bottom)
-double * HarmonicCrossField::getAlpha(CrossField * crossField, int i, int j)
+double * HarmonicCrossFieldPristine::getAlpha(CrossField * crossField, int i, int j)
 {
     double * alpha  = new double[2];
 
@@ -120,7 +119,7 @@ double * HarmonicCrossField::getAlpha(CrossField * crossField, int i, int j)
 }
 
 // Return Beta angle from the cross [i,j] neighbours (right and bottom)
-double * HarmonicCrossField::getBeta(CrossField * crossField, int i, int j)
+double * HarmonicCrossFieldPristine::getBeta(CrossField * crossField, int i, int j)
 {
     double * beta  = new double[2];
 
@@ -132,7 +131,7 @@ double * HarmonicCrossField::getBeta(CrossField * crossField, int i, int j)
 
 // Saves the harmonic solution of the system stored in X
 // to the crossfield representation
-void HarmonicCrossField::saveIntoCrossfield()
+void HarmonicCrossFieldPristine::saveIntoCrossfield()
 {
     for(int i = 0; i < index->getNumberOfPixels(); i++)
     {
@@ -149,25 +148,25 @@ void HarmonicCrossField::saveIntoCrossfield()
 }
 
 // Maps the 2D crossfield to X 1D array for Alpha variables
-int HarmonicCrossField::getColInAforAlpha(int i,int j)
+int HarmonicCrossFieldPristine::getColInAforAlpha(int i,int j)
 {
     return this->index->getFromIndex(i,j,0);
 }
 
 // Maps the 2D crossfield to X 1D array for Beta variables
-int HarmonicCrossField::getColInAforBeta(int i,int j)
+int HarmonicCrossFieldPristine::getColInAforBeta(int i,int j)
 {
     return this->index->getFromIndex(i,j,1);
 }
 
 // Maps the X 1D array to 2D crossfield
-QPoint HarmonicCrossField::getPixelInField(int row)
-{    
+QPoint HarmonicCrossFieldPristine::getPixelInField(int row)
+{
     return index->getPixelIndexed(row);
 }
 
 // Initialization of the arrays for the Eigen solver (X,b)
-void  HarmonicCrossField::inits()
+void  HarmonicCrossFieldPristine::inits()
 {
     // Init x, B
     for(int i = 0; i < index->getNumberOfUknowns(); i++)
@@ -179,7 +178,7 @@ void  HarmonicCrossField::inits()
 }
 
 // Set up of the harmonic system  (eq. 5 in the paper)
-void HarmonicCrossField::setUpSystem()
+void HarmonicCrossFieldPristine::setUpSystem()
 {
     // ** Debugging **
     // ** Map of the constrained pixels for debugging **
@@ -216,7 +215,7 @@ void HarmonicCrossField::setUpSystem()
                 // The same for the other neighbour
                 // The col corresponding to j
                 int col_j_alpha = getColInAforAlpha(i,j+1);
-                int col_j_beta = getColInAforBeta(i,j+1);               
+                int col_j_beta = getColInAforBeta(i,j+1);
 
                 // Set up constraints :
                 // Using Eigen triplets mechanism : http://eigen.tuxfamily.org/dox-devel/group__TutorialSparse.html
@@ -235,7 +234,7 @@ void HarmonicCrossField::setUpSystem()
 
                 // CONSTRAINTS SMOOTHNESS
 
-                // Add values to A and b for every defined (p=0) edge              
+                // Add values to A and b for every defined (p=0) edge
                 if(((rightP==0)&&!((crossfield->isBoundaryPixel(i,j))&&(!crossfield->isCurvatureLine(i,j))))
                     &&!((crossfield->isBoundaryPixel(i,j+1))&&(!crossfield->isCurvatureLine(i,j+1))))
                 {
@@ -281,7 +280,7 @@ void HarmonicCrossField::setUpSystem()
                 }
                 // The col corresponding to j
                 col_j_alpha = getColInAforAlpha(i+1,j);
-                col_j_beta = getColInAforBeta(i+1,j);              
+                col_j_beta = getColInAforBeta(i+1,j);
 
                 if(((bottomP==0)&&!((crossfield->isBoundaryPixel(i,j))&&(!crossfield->isCurvatureLine(i,j))))
                      &&!((crossfield->isBoundaryPixel(i+1,j))&&(!crossfield->isCurvatureLine(i+1,j))))
@@ -323,7 +322,7 @@ void HarmonicCrossField::setUpSystem()
                         // b(ĵ) += 0
                         b(col_j_beta) += 0;
                     }
-                }       
+                }
 
                 // CONSTRAINT STROKE
                 // If it is a constrained pixel  W* (a+b)=  W* Titha tripletList.push_back(T(,,));
@@ -370,7 +369,7 @@ void HarmonicCrossField::setUpSystem()
 }
 
 // Best P between 2 neighbour crosses computation (check out smoothness measure in the paper for details)
-int HarmonicCrossField::getBestP(double alpha_i,double beta_i,double alpha_j,double beta_j, double & bestCost)
+int HarmonicCrossFieldPristine::getBestP(double alpha_i,double beta_i,double alpha_j,double beta_j, double & bestCost)
 {
     double a  = (double)((alpha_j-alpha_i)/(0.5*M_PI));
 
@@ -422,7 +421,7 @@ int HarmonicCrossField::getBestP(double alpha_i,double beta_i,double alpha_j,dou
     }
 }
 
-double HarmonicCrossField::estimateCost(double alpha_i,double beta_i,double alpha_j,double beta_j,int p_ij)
+double HarmonicCrossFieldPristine::estimateCost(double alpha_i,double beta_i,double alpha_j,double beta_j,int p_ij)
 {
     // P mod 2, avoiding negative values of p
     int p_mode_2 = ((p_ij%2)+2)%2;
@@ -434,7 +433,7 @@ double HarmonicCrossField::estimateCost(double alpha_i,double beta_i,double alph
 }
 
 // Implementation of Gauss Seidel method for solving
-bool HarmonicCrossField::localGaussSeidel(QVector<int> residualsQueue, QSet<int> elementsInQueue)
+bool HarmonicCrossFieldPristine::localGaussSeidel(QVector<int> residualsQueue, QSet<int> elementsInQueue)
 {
     // To update x.
     // In case of convergence, x = x_aux and return true
@@ -483,7 +482,7 @@ bool HarmonicCrossField::localGaussSeidel(QVector<int> residualsQueue, QSet<int>
 }
 
 // In Order insertion implementation (for Gauss Seidel method)
-void HarmonicCrossField::insertInOrder(QList<StitchData> & list, StitchData data)
+void HarmonicCrossFieldPristine::insertInOrder(QList<StitchData> & list, StitchData data)
 {
     if(list.empty())
     {
@@ -520,7 +519,7 @@ void HarmonicCrossField::insertInOrder(QList<StitchData> & list, StitchData data
 }
 
 // In Order insertion implementation (for Gauss Seidel method)
-void HarmonicCrossField::insertInOrder_integer(QList<int> & list, int i)
+void HarmonicCrossFieldPristine::insertInOrder_integer(QList<int> & list, int i)
 {
     if(list.empty())
     {
@@ -555,292 +554,10 @@ void HarmonicCrossField::insertInOrder_integer(QList<int> & list, int i)
 
 }
 
-void HarmonicCrossField::smoothIteration() {
-    TIME_INIT();
-    if(this->isFirstIteration) {
-        nonDefinedP = pjumpfield->getNonDefinedPList();
-
-        // Fill X by solving once exactly:
-        // performs a Cholesky factorization of A
-        SimplicialCholesky<SpMat> chol(this->A);
-        this->x = chol.solve(this->b);
-        qDebug()  << "TO STITCH " << nonDefinedP->size();
-
-        this->isFirstIteration = false;
-    }
-TIME();
-    // List of all the stitches to do in one iteration
-    QList<StitchData> toStitch;
-
-    // For every candidate edge, find the best one to stich (less cost)
-    // and add to the full system
-    for(int i = 0; i < nonDefinedP->size(); i++)
-    {
-        // Get alphas and betas
-        QPoint pixel_i(nonDefinedP->at(i).first.x(),nonDefinedP->at(i).first.y());
-        QPoint pixel_j(nonDefinedP->at(i).second.x(),nonDefinedP->at(i).second.y());
-
-        // Obtain alphas and betas from the solution vector
-        double alpha_i = x(getColInAforAlpha(pixel_i.x(),pixel_i.y()));
-        double beta_i = x(getColInAforBeta(pixel_i.x(),pixel_i.y()));
-
-        double alpha_j = x(getColInAforAlpha(pixel_j.x(),pixel_j.y()));
-        double beta_j = x(getColInAforBeta(pixel_j.x(),pixel_j.y()));
-
-        double cost = INFINITY;
-
-        // Find the best p and stimated quality comes in "cost"
-        int approx_p = this->getBestP(alpha_i,beta_i,alpha_j,beta_j,cost);
-
-        StitchData data;
-        data.i = i;
-        data.cost = cost;
-        data.approx_p = approx_p;
-
-        // Insert in order
-        this->insertInOrder(toStitch,data);
-    }
-TIME();
-    // Residuals x
-    QVector<int> residualsQueue;
-    QSet<int> elementsInQueue;
-    QVector<int> modifiedXIndex;
-TIME();
-    VectorXd residuals;
-    residuals = ((A * x) - b).cwiseAbs();
-
-    double accum_cost = 0;
-
-    QList<int> toRemove;
-
-    // Stitch only first one
-    // if(!toStitch.empty())
-    // ** Add constraints to A
-    while((accum_cost < MAXACCUMSTITCH)&&(!toStitch.empty()))
-    {
-
-        // Get p
-        int best_p = toStitch.first().approx_p;
-
-        // Accum cost
-        accum_cost += toStitch.first().cost;
-
-        // Stich best candidate
-        // Remove it from the list of non defined
-        QPair<QPoint,QPoint> bestCandidate = nonDefinedP->at(toStitch.first().i);
-
-        // To remove it after from the
-        insertInOrder_integer(toRemove,toStitch.first().i);
-
-        // Remove edge from toStitch list
-        toStitch.removeFirst();
-
-        // Save p
-        this->pjumpfield->setP(bestCandidate.first,bestCandidate.second,best_p);
-
-        // P mod 2, avoiding negative values of p
-        int best_p_mode_2 = ((best_p%2)+2)%2;
-
-        // Add equations to the system (stitching)
-
-        int first_i = bestCandidate.first.x();
-        int first_j = bestCandidate.first.y();
-        int second_i = bestCandidate.second.x();
-        int second_j = bestCandidate.second.y();
-
-        if((!((crossfield->isBoundaryPixel(first_i,first_j))&&(!crossfield->isCurvatureLine(first_i,first_j))))
-          &&!((crossfield->isBoundaryPixel(second_i,second_j))&&(!crossfield->isCurvatureLine(second_i,second_j))))
-        {
-            // The col corresponding to i
-            int col_i_alpha = getColInAforAlpha(first_i,first_j);
-            int col_i_beta = getColInAforBeta(first_i,first_j);
-
-            // The col corresponding to j
-            int col_j_alpha = getColInAforAlpha(second_i,second_j);
-            int col_j_beta = getColInAforBeta(second_i,second_j);
-
-            // To update residuals
-            if(!elementsInQueue.contains(col_i_alpha))
-            {
-                modifiedXIndex.push_back(col_i_alpha);
-                elementsInQueue.insert(col_i_alpha);
-            }
-            if(!elementsInQueue.contains(col_i_beta))
-            {
-                 modifiedXIndex.push_back(col_i_beta);
-                 elementsInQueue.insert(col_i_beta);
-            }
-            if(!elementsInQueue.contains(col_j_alpha))
-            {
-                modifiedXIndex.push_back(col_j_alpha);
-                elementsInQueue.insert(col_j_alpha);
-            }
-            if(!elementsInQueue.contains(col_j_beta))
-            {
-                modifiedXIndex.push_back(col_j_beta);
-                elementsInQueue.insert(col_j_beta);
-            }
-
-
-            // CONSTRAINTS SMOOTHNESS
-
-            // New values in A for alpha
-            // A(i,i) += 4
-            tripletList->push_back(T(col_i_alpha,col_i_alpha,WEIGHTSMOOTH* 4));
-            // A(j,j) += 4
-            tripletList->push_back(T(col_j_alpha,col_j_alpha,WEIGHTSMOOTH* 4));
-            // A(i,j) += -4
-            tripletList->push_back(T(col_i_alpha,col_j_alpha,WEIGHTSMOOTH* -4));
-            // A(j,i) += -4
-            tripletList->push_back(T(col_j_alpha,col_i_alpha,WEIGHTSMOOTH* -4));
-            // Crossed between î and j, ĵ and i are = 0
-            // A(î,î) += 4*(1-2*b)^2 = 4*(-1)^2 = 4
-            tripletList->push_back(T(col_i_beta,col_i_beta, WEIGHTSMOOTH* 4 * (1-2*(best_p_mode_2)) * (1-2*(best_p_mode_2))));
-            // A(ĵ,ĵ) += 4
-            tripletList->push_back(T(col_j_beta,col_j_beta, WEIGHTSMOOTH* 4));
-            // A(î,ĵ) += 4*(2*b-1) | b=0 => 4*(2*b-1) = 4*(-1) = -4
-            tripletList->push_back(T(col_i_beta,col_j_beta, WEIGHTSMOOTH*  4*((2*(best_p_mode_2))-1)));
-            // A(ĵ,î) += 4*(2*b-1) | b=0 => 4*(2*b-1) = 4*(-1) = -4
-            tripletList->push_back(T(col_j_beta,col_i_beta, WEIGHTSMOOTH* 4*((2*(best_p_mode_2))-1)));
-
-            // New row in B for alpha
-            // b(i) += -2*PI*p = 0
-            this->b(col_i_alpha) += WEIGHTSMOOTH* -2*M_PI*best_p;
-            // b(j) += -2*PI*p = 0
-            this->b(col_j_alpha) += WEIGHTSMOOTH* 2*M_PI*best_p;
-            // b(î) += 0
-            this->b(col_i_beta) += 0;
-            // b(ĵ) += 0
-            this->b(col_j_beta) += 0;
-        }
-
-    }
-TIME();
-    // Remove from nonDefinedP (from the back to the front, to avoid altering the ordering)
-    for(int i = 0; i < toRemove.size(); i++)
-    {
-        nonDefinedP->remove(toRemove.at(i));
-    }
-
-    // Set matrix from list
-    this->A.setFromTriplets(tripletList->begin(), tripletList->end());
-    this->A.makeCompressed();
-TIME();
-    // Stack of options to solve the system
-    // First, local Gauss Seidel by stimating residuals (just update x locally)
-
-    // Residual = Old x - updated A times x - b
-    residuals = residuals - ((A * x) - b).cwiseAbs();
-
-    elementsInQueue.clear();
-
-    // Push Residuals (Now filter by error)
-    for(int k = 0; k < modifiedXIndex.size(); k++)
-    {
-        if(abs(residuals(modifiedXIndex.at(k))) > 0.1)
-        {
-            residualsQueue.push_front(modifiedXIndex.at(k));
-            elementsInQueue.insert(modifiedXIndex.at(k));
-        }
-    }
-
-    // Solve with the stack of solvers
-
-    // First try local update (Fast)
-    qDebug() << "TRY WITH GAUSS " << nonDefinedP->size();
-
-    QTime t;
-    t.start();
-    bool gauss = localGaussSeidel(residualsQueue,elementsInQueue);
-TIME();
-    // Then, try Conjugate Gradient (Fast--)
-    if(!gauss)
-    {
-        qDebug() << "TRY WITH GRADIENT " << nonDefinedP->size();
-
-        VectorXd auxX = x;
-        t.restart();
-        // If it didn't converged
-        // then, try global iterative
-        ConjugateGradient<SparseMatrix<double> > cg;
-        cg.compute(this->A);
-        cg.setMaxIterations(1000);
-        cg.setTolerance(0.001);
-        auxX = cg.solveWithGuess(this->b,this->x);
-
-        // Then, try Cholesky (Slow)
-        if(cg.info()==Success)
-        {
-            this->x = auxX;
-        }
-        else
-        {
-            qDebug() << "TRY WITH CHOLESKY " << nonDefinedP->size();
-            // If it didn't converged
-            // then, try global cholesky
-            SimplicialCholesky<SpMat> chol2(this->A);
-            this->x = chol2.solve(this->b);
-        }
-
-        // Output for drawing: (May slow down optimization)
-        // Save into crossfield
-        saveIntoCrossfield();
-        // Generate V0-V1 field
-        this->crossfield->generate_V0V1_field();
-    }
-TIME();
-    if(nonDefinedP->empty()) {
-        // Run one last time exactly (Cholesky)
-        // performs a Cholesky factorization of A
-        SimplicialCholesky<SpMat> chol3(this->A);
-        this->x = chol3.solve(this->b);
-        if(chol3.info()==Success)
-        {
-            qDebug() << "Last exact solution: SUCCESS";
-        }
-        else
-        {
-            qDebug() << "Solve CG with a lot more presition";
-
-            VectorXd auxX = x;
-            ConjugateGradient<SparseMatrix<double> > cg;
-            cg.compute(this->A);
-            cg.setMaxIterations(1000000);
-            cg.setTolerance(0.00001);
-            auxX = cg.solveWithGuess(this->b,this->x);
-
-            if(cg.info()==Success)
-            {
-                qDebug() << "SUCCESS!";
-                this->x = auxX;
-            }
-            else
-            {
-                qDebug() << "WARNING: FAIL SOLVING";
-            }
-        }
-
-        // Save into crossfield
-        saveIntoCrossfield();
-
-        // Generate V0-V1 field (change representation to be able to run BendField algorithm
-        this->crossfield->generate_V0V1_field();
-
-        // Print information
-        this->printEnergy(crossfield,pjumpfield,0);
-        this->finishedLastIteration = true;
-    }
-TIME();
-}
-
-bool HarmonicCrossField::isDone() {
-    return finishedLastIteration;
-}
-
-
 // Iterative stitching method for solving the field
-void HarmonicCrossField::smoothWithIterativeGreedy()
+void HarmonicCrossFieldPristine::smoothWithIterativeGreedy() //(GLWidget * glwidget)
 {
+    TIME_INIT();
     QTime totalTime;
     totalTime.start();
 
@@ -862,10 +579,10 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
     this->x = chol.solve(this->b);
 
     qDebug()  << "TO STITCH " << nonDefinedP->size();
-
     // While there is still some edges to stich
     while(!nonDefinedP->empty())
     {
+        TIME();
         // List of all the stitches to do in one iteration
         QList<StitchData> toStitch;
 
@@ -898,6 +615,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
             this->insertInOrder(toStitch,data);
         }
 
+        TIME();
         // Residuals x
         QVector<int> residualsQueue;
         QSet<int> elementsInQueue;
@@ -910,6 +628,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
 
         QList<int> toRemove;
 
+        TIME();
         // Stitch only first one
         // if(!toStitch.empty())
         // ** Add constraints to A
@@ -947,7 +666,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
 
             if((!((crossfield->isBoundaryPixel(first_i,first_j))&&(!crossfield->isCurvatureLine(first_i,first_j))))
               &&!((crossfield->isBoundaryPixel(second_i,second_j))&&(!crossfield->isCurvatureLine(second_i,second_j))))
-            {                
+            {
                 // The col corresponding to i
                 int col_i_alpha = getColInAforAlpha(first_i,first_j);
                 int col_i_beta = getColInAforBeta(first_i,first_j);
@@ -1013,6 +732,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
 
         }
 
+        TIME();
         // Remove from nonDefinedP (from the back to the front, to avoid altering the ordering)
         for(int i = 0; i < toRemove.size(); i++)
         {
@@ -1031,6 +751,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
 
         elementsInQueue.clear();
 
+        TIME();
         // Push Residuals (Now filter by error)
         for(int k = 0; k < modifiedXIndex.size(); k++)
         {
@@ -1052,6 +773,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
         avgGauss += t.elapsed();
         gaussCounter++;
 
+        TIME();
         // Then, try Conjugate Gradient (Fast--)
         if(!gauss)
         {
@@ -1072,7 +794,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
 
             // Then, try Cholesky (Slow)
             if(cg.info()==Success)
-            {                
+            {
                 this->x = auxX;
             }
             else
@@ -1084,25 +806,27 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
                 this->x = chol2.solve(this->b);
             }
         }
+        TIME();
 
-//        // FOR PLOTTING
-//        if(toStitch.size()<400)
-//        {
-//            // Save into crossfield
-//            saveIntoCrossfield();
+        // FOR PLOTTING
+        if(toStitch.size()<400)
+        {
+            // Save into crossfield
+            saveIntoCrossfield();
 
-//            // Generate V0-V1 field
-//            this->crossfield->generate_V0V1_field();
+            // Generate V0-V1 field
+            this->crossfield->generate_V0V1_field();
 
-//            // Print information
-//            this->printEnergy(crossfield,pjumpfield,0);
+            // Print information
+            this->printEnergy(crossfield,pjumpfield,0);
 
-//            // plot (this is here, and not in the MainWindow class, because sometimes I want to paint at each iteration of the algorithm, for debugging reasons)
+            // plot (this is here, and not in the MainWindow class, because sometimes I want to paint at each iteration of the algorithm, for debugging reasons)
 //            glwidget->repaint();
-//        }
+        }
 
     }
 
+    TIME();
     // Run one last time exactly (Cholesky)
     // performs a Cholesky factorization of A
     SimplicialCholesky<SpMat> chol3(this->A);
@@ -1133,6 +857,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
         }
     }
 
+    TIME();
     // Save into crossfield
     saveIntoCrossfield();
 
@@ -1144,7 +869,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
 
     // Plot on the interface
     // DEBUGGING
-    //glwidget->repaint();
+//    glwidget->repaint();
 
     // Print stats
     if(gaussCounter != 0)
@@ -1158,6 +883,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
     qDebug() << "UNKNOWNS: " << index->getNumberOfUknowns();
     qDebug() << "TOTAL TIME " << totalTime.elapsed() / 1000.;
 
+    TIME();
 }
 
 
@@ -1165,7 +891,7 @@ void HarmonicCrossField::smoothWithIterativeGreedy()
 
 // Computes and prints the total energy of the current optimization process
 // Saves an error map (color coded) showing the less accurate regions
-double HarmonicCrossField::printEnergy(CrossField * crossField,PeriodJumpField * pjumpfield,int iterations)
+double HarmonicCrossFieldPristine::printEnergy(CrossField * crossField,PeriodJumpField * pjumpfield,int iterations)
 {
     // Output error image
     Mat output = Mat::zeros(crossField->height(),crossField->width(), CV_64FC3);

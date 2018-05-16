@@ -33,11 +33,16 @@ void WorkerThread::update(GLWidget *widget) {
     this->mask = widget->getCanvas(GLWidget::MASK_CANVAS).getImage();
     this->concavity = widget->getCanvas(GLWidget::CONCAVITY_CANVAS).getImage();
 
-    this->constraintsCounter = widget->getCanvas(GLWidget::CONSTRAINT_CANVAS).getNumInteractions();
-    this->curvatureCounter = widget->getCanvas(GLWidget::CURVATURE_CANVAS).getNumInteractions();
+    int consCnt = widget->getCanvas(GLWidget::CONSTRAINT_CANVAS).getNumInteractions();
+    int curvCnt = widget->getCanvas(GLWidget::CURVATURE_CANVAS).getNumInteractions();
+    if(consCnt != this->constraintsCounter || curvCnt != this->curvatureCounter) {
+        this->resetOptimization = true;
+    }
+    this->constraintsCounter = consCnt;
+    this->curvatureCounter = curvCnt;
 
     if(!isRunning()) {
-        start(LowPriority);
+        start(HighPriority);
     } else {
         restart = true;
         condition.wakeOne();
@@ -56,30 +61,39 @@ void WorkerThread::finishImages(const QImage &crosses, const QImage &normals, co
 void WorkerThread::run() {
     bool newThread = true;
     Worker worker;
-    int consCnt = 0, curvCnt = 0;
     QImage concavityImg;
+    QTime time, temp;
     forever {
+        temp.restart();
         mutex.lock();
-        if(newThread || consCnt != this->curvatureCounter || curvCnt != this->curvatureCounter) {
+        if(this->resetOptimization || newThread) {
             worker = Worker(this->constraints, this->curvature, this->mask, this->concavity);
             newThread = false;
+            this->resetOptimization = false;
+            time.start();
         } else {
             concavityImg = this->concavity;
         }
-        consCnt = this->constraintsCounter;
-        curvCnt = this->curvatureCounter;
         mutex.unlock();
+
+        qDebug() << temp.restart() << "ms in mutex locked";
 
         if(!worker.isDone())
             worker.smoothingIteration();
-        else
-            worker.updateConcavity(concavityImg);
+        qDebug() << temp.restart() << "ms in smoothing";
 
-        emit renderedImages(worker.drawCrosses(), worker.drawNormals(), worker.drawShading());
+        if(time.elapsed() > 5000) { // Draw at most every 5 seconds
+            worker.updateConcavity(concavityImg);
+            emit renderedImages(worker.drawCrosses(), worker.drawNormals(), worker.drawShading());
+            time.start();
+        }
+
+        qDebug() << temp.restart() << "ms drawing";
 
         mutex.lock();
-        if(!restart && worker.isDone())
+        if(!restart && worker.isDone()) {
             condition.wait(&mutex);
+        }
         if(abort)
             return;
         restart = false;

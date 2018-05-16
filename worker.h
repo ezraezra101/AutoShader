@@ -7,6 +7,7 @@
 #include "crossfield.h"
 #include "crossfield3d.h"
 #include "harmoniccrossfield.h"
+#include "harmoniccrossfieldpristine.h"
 #include "bendfield.h"
 #include "normalfield.h"
 #include "imageconverter.h"

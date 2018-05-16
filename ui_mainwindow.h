@@ -261,7 +261,7 @@ public:
         show_crossfields->setText(QApplication::translate("MainWindow", "Show crossfield", nullptr));
         show_normals->setText(QApplication::translate("MainWindow", "Show normals", nullptr));
         show_shading->setText(QApplication::translate("MainWindow", "Show shading", nullptr));
-        export_shading->setText(QApplication::translate("MainWindow", "Testing button", nullptr));
+        export_shading->setText(QApplication::translate("MainWindow", "Restart Normal Generation", nullptr));
     } // retranslateUi
 
 };

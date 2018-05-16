@@ -36,8 +36,8 @@ The fact that you are presently reading this means that you have had
 knowledge of the CeCILL license and that you accept its terms.
 */
 
-#ifndef HARMONICCROSSFIELD_H
-#define HARMONICCROSSFIELD_H
+#ifndef HarmonicCrossFieldPristine_H
+#define HarmonicCrossFieldPristine_H
 
 // Includes from the project
 #include "crossfield.h"
@@ -76,13 +76,12 @@ struct StitchData{
     double approx_p;
 };
 #endif
-
 // This class takes a partially-initialized period jump field
 // (everywhere is 0 when possible) and a crossfield (with
 // some sparse constraints defined). And returns an interpolated
 // crossfield with a harmonic energy, and a full filled period
 // jump field.
-class HarmonicCrossField
+class HarmonicCrossFieldPristine
 {
 
     // The crossfield to be interpolated from sparse constraints
@@ -91,8 +90,6 @@ class HarmonicCrossField
     // The Period jump field to compare any neighbouring pair of
     // crosses in the crossfield
     PeriodJumpField * pjumpfield;
-    // The undefineds remaining in the jumpfield
-    QVector<QPair<QPoint,QPoint> > * nonDefinedP;
 
     // For Eigen Solver (representation)
     vector<T>  * tripletList;
@@ -106,11 +103,11 @@ class HarmonicCrossField
     // the unknowns in the crossfield.
     UnknownsIndexer * index;
 
+    // Masked region in the input crossfield
+    Mat mask;
+
     // Size of the crossfield
     int h,w;
-
-    bool finishedLastIteration;
-    bool isFirstIteration;
 
     // Initialization of the arrays for the Eigen solver (X,b)
     void inits();
@@ -159,7 +156,7 @@ class HarmonicCrossField
 public:
 
     // Constructor
-    HarmonicCrossField();
+    HarmonicCrossFieldPristine();
 
     // Constructor
     // Init all the vectors and prepares the system for solving the harmonic
@@ -167,16 +164,14 @@ public:
     // Crossfield (init with the input constraints)
     // Period Jumps (init with 0 when posible - see Greedy mixed-integer optimization section in paper)
     // Unknown Index (indexing constrained cels in the crosfield)
-    HarmonicCrossField(CrossField * ,PeriodJumpField *, UnknownsIndexer *);
+    // Mask (the mask for selected region to solve for)
+    HarmonicCrossFieldPristine(CrossField * ,PeriodJumpField *, UnknownsIndexer *, Mat);
 
     // Iterative stitching method for solving the field
-    void smoothWithIterativeGreedy();
+    void smoothWithIterativeGreedy(); //(GLWidget * glwidget);
 
-    void smoothIteration();
-
-    bool isDone();
 
 
 };
 
-#endif // HARMONICCROSSFIELD_H
+#endif // HarmonicCrossFieldPristine_H
